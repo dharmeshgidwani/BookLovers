@@ -1,6 +1,27 @@
 const Book = require("../models/Book");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const cloudinary = require("cloudinary").v2;
+
+require("dotenv").config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const uploadToCloudinary = async (filePath) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: "book_images", 
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error("Cloudinary upload failed:", error);
+    throw error; 
+  }
+};
 
 exports.getBooks = async (req, res) => {
   try {
@@ -26,12 +47,18 @@ exports.getBookById = async (req, res) => {
 
 exports.addBook = async (req, res) => {
   try {
-    console.log("Received data for new book:", req.body); // Log the received request body
+    console.log("Received data for new book:", req.body);
     if (req.file) {
-      console.log("Received file:", req.file); // Log the uploaded file if it exists
+      console.log("Received file:", req.file);
     }
 
     const { title, author, genre, price, mrp, weight, stock, bookType } = req.body;
+
+    // If there's an image, upload it to Cloudinary
+    let imageUrl;
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.path);
+    }
 
     const newBookData = {
       title,
@@ -42,11 +69,8 @@ exports.addBook = async (req, res) => {
       mrp,
       weight,
       stock,
+      imageUrl,
     };
-
-    if (req.file) {
-      newBookData.imageUrl = req.file.path;
-    }
 
     const newBook = new Book(newBookData);
 
@@ -61,8 +85,8 @@ exports.addBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
-    console.log("Received data for book update:", req.body); // Log the received data for updating the book
-    console.log("Received file for update:", req.file); // Log the uploaded file if it exists
+    console.log("Received data for book update:", req.body);
+    console.log("Received file for update:", req.file);
 
     const { title, author, genre, price, mrp, stock, bookType, weight } = req.body;
 
@@ -76,7 +100,12 @@ exports.updateBook = async (req, res) => {
     if (mrp !== undefined) updateData.mrp = mrp;
     if (weight !== undefined) updateData.weight = weight;
     if (stock !== undefined) updateData.stock = stock;
-    if (req.file) updateData.imageUrl = req.file.path;
+
+    // If there's an image, upload it to Cloudinary
+    if (req.file) {
+      const imageUrl = await uploadToCloudinary(req.file.path);
+      updateData.imageUrl = imageUrl; // Update the image URL with Cloudinary's URL
+    }
 
     const updatedBook = await Book.findByIdAndUpdate(
       req.params.id,
@@ -97,7 +126,7 @@ exports.updateBook = async (req, res) => {
 
 exports.deleteBook = async (req, res) => {
   try {
-    console.log("Received request to delete book with ID:", req.params.id); // Log the ID of the book to delete
+    console.log("Received request to delete book with ID:", req.params.id); 
     const book = await Book.findByIdAndDelete(req.params.id);
 
     if (!book) {

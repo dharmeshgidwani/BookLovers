@@ -129,7 +129,7 @@ const Book = () => {
     <div className="book-page">
       <div className="book-container">
         <img
-          src={`${import.meta.env.VITE_APP_API_URL}/${book.imageUrl}`}
+          src={book.imageUrl}
           alt={book.title}
           className="book-cover"
         />

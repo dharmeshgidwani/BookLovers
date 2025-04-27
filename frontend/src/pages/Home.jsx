@@ -7,8 +7,6 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [originalBooks, setOriginalBooks] = useState([]);
 
-  console.log(`${import.meta.env.VITE_APP_API_URL}`);
-
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -42,6 +40,9 @@ function Home() {
 
   const genres = [...new Set(books.map((book) => book.genre))];
 
+  console.log(books)
+
+
   return (
     <div className="home-page">
       <div className="branding">
@@ -70,7 +71,7 @@ function Home() {
               .map((book) => (
                 <div key={book._id} className="book-item">
                   <img
-                    src={`${import.meta.env.VITE_APP_API_URL}/${book.imageUrl}`}
+                    src={book.imageUrl}
                     alt={book.title}
                     className="book-image"
                   />
