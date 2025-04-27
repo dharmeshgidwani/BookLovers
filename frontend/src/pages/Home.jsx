@@ -10,7 +10,7 @@ function Home() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/books`);
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books`);
         const data = await res.json();
         setBooks(data);
         setOriginalBooks(data);
@@ -68,7 +68,7 @@ function Home() {
               .map((book) => (
                 <div key={book._id} className="book-item">
                   <img
-                    src={`http://localhost:5001/${book.imageUrl}`}
+                    src={`${import.meta.env.VITE_APP_API_URL}/${book.imageUrl}`}
                     alt={book.title}
                     className="book-image"
                   />

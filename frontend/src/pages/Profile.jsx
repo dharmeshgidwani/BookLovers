@@ -22,7 +22,7 @@ const Profile = () => {
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/orders/user/${user.id}`);
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/user/${user.id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch orders");
         setOrders(data || []);
@@ -45,7 +45,7 @@ const Profile = () => {
   // Save updated profile
   const handleSave = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/api/users/update/${user.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/users/update/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

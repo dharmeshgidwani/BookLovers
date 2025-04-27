@@ -18,7 +18,7 @@ const Cart = () => {
   const fetchBookDetails = async (bookId) => {
     if (!bookId) return {}; // Return an empty object if bookId is not provided
     try {
-      const response = await fetch(`http://localhost:5001/api/books/${bookId}`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`);
       const bookData = await response.json();
       if (!response.ok)
         throw new Error(bookData.message || "Error fetching book details");
@@ -88,7 +88,7 @@ const Cart = () => {
     );
 
     try {
-      const response = await fetch("http://localhost:5001/api/orders/create", {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

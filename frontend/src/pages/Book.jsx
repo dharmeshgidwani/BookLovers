@@ -18,7 +18,7 @@ const Book = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/books/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${id}`);
         const data = await res.json();
         setBook(data);
       } catch (err) {
@@ -95,7 +95,7 @@ const Book = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:5001/api/orders/create", {
+      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +127,7 @@ const Book = () => {
     <div className="book-page">
       <div className="book-container">
         <img
-          src={`http://localhost:5001/${book.imageUrl}`}
+          src={`${import.meta.env.VITE_APP_API_URL}/${book.imageUrl}`}
           alt={book.title}
           className="book-cover"
         />

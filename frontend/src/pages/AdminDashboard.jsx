@@ -23,14 +23,14 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchBooks = async () => {
-    const res = await fetch("http://localhost:5001/api/books");
+    const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books`);
     const data = await res.json();
     setBooks(data);
   };
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/orders");
+      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders`);
       if (!res.ok) {
         throw new Error("Failed to fetch orders");
       }
@@ -70,8 +70,8 @@ const AdminDashboard = () => {
     formData.append("image", newBook.image);
 
     const url = editingBookId
-      ? `http://localhost:5001/api/books/${editingBookId}`
-      : "http://localhost:5001/api/books/add";
+      ? `${import.meta.env.VITE_APP_API_URL}/api/books/${editingBookId}`
+      : `${import.meta.env.VITE_APP_API_URL}/api/books/add`;
 
     const method = editingBookId ? "PUT" : "POST";
 
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
   };
 
   const handleDelete = async (bookId) => {
-    const res = await fetch(`http://localhost:5001/api/books/${bookId}`, {
+    const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`, {
       method: "DELETE",
     });
 
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
   };
 
   // const handleUpdateStock = async (bookId, newStock) => {
-  //   const res = await fetch(`http://localhost:5001/api/books/${bookId}`, {
+  //   const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`, {
   //     method: "PUT",
   //     headers: { "Content-Type": "application/json" },
   //     body: JSON.stringify({ stock: newStock }),
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
   };
 
   const handleOrderStatusUpdate = async (orderId, status) => {
-    const res = await fetch(`http://localhost:5001/api/orders/${orderId}`, {
+    const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
