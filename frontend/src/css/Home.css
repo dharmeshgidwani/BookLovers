@@ -1,0 +1,145 @@
+.home-page {
+  font-family: 'Roboto', sans-serif;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+.branding {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #16a085, #1abc9c);
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.branding h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.branding p {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.tagline p {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #f7f7f7;
+  opacity: 0.9;
+}
+
+.tagline p:first-child {
+  margin-bottom: 1rem;
+}
+
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.search-bar input {
+  padding: 0.7rem;
+  font-size: 1rem;
+  width: 300px;
+  border-radius: 30px;
+  border: 1px solid #bdc3c7;
+  transition: border 0.3s ease;
+}
+
+.search-bar input:focus {
+  border: 1px solid #16a085;
+  outline: none;
+}
+
+.search-bar button {
+  padding: 0.7rem 1.5rem;
+  background-color: #16a085;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.search-bar button:hover {
+  background-color: #1abc9c;
+}
+
+.genre-section {
+  margin-bottom: 3rem;
+}
+
+.genre-section h2 {
+  font-size: 2.5rem;
+  color: #34495e;
+  text-transform: capitalize;
+  margin-bottom: 1.5rem;
+}
+
+.books-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.book-item {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.book-item h3 {
+  font-size: 1.6rem;
+  color: #2c3e50;
+  margin-bottom: 0.8rem;
+}
+
+.book-item p {
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+.book-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.book-meta {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #95a5a6;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: #16a085;
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #1abc9c;
+}

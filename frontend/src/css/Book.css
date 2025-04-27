@@ -1,0 +1,67 @@
+.book-page {
+    padding: 2rem;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .book-container {
+    display: flex;
+    gap: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .book-cover {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .book-details {
+    flex: 1;
+  }
+  
+  .book-details h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+  
+  .book-details .author {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 0.5rem;
+  }
+  
+  .book-details .price {
+    font-size: 1.3rem;
+    color: #16a085;
+    margin-bottom: 1rem;
+  }
+  
+  .book-details .description {
+    font-size: 1.1rem;
+    color: #34495e;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  
+  .order-btn {
+    padding: 0.8rem 2rem;
+    background-color: #16a085;
+    color: white;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .order-btn:hover {
+    background-color: #1abc9c;
+  }
+  
