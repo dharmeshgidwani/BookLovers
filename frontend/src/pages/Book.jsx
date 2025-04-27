@@ -123,6 +123,8 @@ const Book = () => {
     return <div className="book-page">Loading...</div>;
   }
 
+
+  console.log(book)
   return (
     <div className="book-page">
       <div className="book-container">
@@ -135,6 +137,7 @@ const Book = () => {
           <h1>{book.title}</h1>
           <p className="author">by {book.author}</p>
           <p className="price">Price: ₹{book.price}</p>
+          <p className="author">Book Type: {book.bookType}</p>
 
           {/* Quantity Selector */}
           <div className="quantity-selector">

@@ -11,6 +11,8 @@ const AdminDashboard = () => {
     price: "",
     genre: "",
     stock: "",
+    bookType: "",
+    weight: "",
   });
   const [editingBookId, setEditingBookId] = useState(null);
   const [showBooks, setShowBooks] = useState(false);
@@ -54,6 +56,8 @@ const AdminDashboard = () => {
       genre: "",
       stock: "",
       imageUrl: "",
+      bookType: "",
+      weight: "",
     });
     setEditingBookId(null);
   };
@@ -61,33 +65,44 @@ const AdminDashboard = () => {
   const handleAddOrUpdateBook = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("title", newBook.title);
-    formData.append("author", newBook.author);
-    formData.append("genre", newBook.genre);
-    formData.append("mrp", newBook.mrp);
-    formData.append("price", newBook.price);
-    formData.append("stock", newBook.stock);
-    formData.append("image", newBook.image);
+  
+    if (newBook.title) formData.append("title", newBook.title);
+    if (newBook.bookType) formData.append("bookType", newBook.bookType);
+    if (newBook.author) formData.append("author", newBook.author);
+    if (newBook.genre) formData.append("genre", newBook.genre);
+    if (newBook.mrp !== undefined) formData.append("mrp", newBook.mrp);
+    if (newBook.weight !== undefined) formData.append("weight", newBook.weight);
+    if (newBook.price !== undefined) formData.append("price", newBook.price);
+    if (newBook.stock !== undefined) formData.append("stock", newBook.stock);
+    if (newBook.image) formData.append("image", newBook.image);
 
+    console.log(newBook)
+  
     const url = editingBookId
       ? `${import.meta.env.VITE_APP_API_URL}/api/books/${editingBookId}`
       : `${import.meta.env.VITE_APP_API_URL}/api/books/add`;
-
+  
     const method = editingBookId ? "PUT" : "POST";
-
+  
     const res = await fetch(url, {
       method,
       body: formData,
     });
 
+    const data = await res.json();
+
+
+  
     if (res.ok) {
       alert(`Book ${editingBookId ? "updated" : "added"} successfully!`);
       fetchBooks();
       resetForm();
     } else {
+      console.log(data)
       alert("Error saving book");
     }
   };
+  
 
   const handleDelete = async (bookId) => {
     const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`, {
@@ -120,11 +135,13 @@ const AdminDashboard = () => {
   const handleEdit = (book) => {
     setNewBook({
       title: book.title,
+      bookType: book.bookType,
       author: book.author,
       genre: book.genre,
       price: book.price,
       mrp: book.mrp,
       stock: book.stock,
+      weight: book.weight,
     });
     setEditingBookId(book._id);
     setShowForm(true);
@@ -212,11 +229,27 @@ const AdminDashboard = () => {
               }
             />
             <input
+              type="text"
+              placeholder="Book Type"
+              value={newBook.bookType}
+              onChange={(e) =>
+                setNewBook({ ...newBook, bookType: e.target.value })
+              }
+            />
+            <input
               type="number"
               placeholder="MRP"
               value={newBook.mrp}
               onChange={(e) =>
                 setNewBook({ ...newBook, mrp: e.target.value })
+              }
+            />
+            <input
+              type="number"
+              placeholder="weight"
+              value={newBook.weight}
+              onChange={(e) =>
+                setNewBook({ ...newBook, weight: e.target.value })
               }
             />
             <input

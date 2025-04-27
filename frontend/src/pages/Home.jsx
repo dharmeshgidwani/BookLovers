@@ -79,6 +79,7 @@ function Home() {
                   <p>Author: {book.author}</p>
                   <p>MRP: {book.mrp}</p>
                   <p>Price: ₹ {book.price}</p>
+                  <p>Book Type:  {book.bookType}</p>
                   <Link to={`/book/${book._id}`} className="btn">
                     View Details
                   </Link>
