@@ -202,7 +202,6 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setNewBook({ ...newBook, author: e.target.value })
               }
-              required
             />
             <input
               type="text"
@@ -211,7 +210,6 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setNewBook({ ...newBook, genre: e.target.value })
               }
-              required
             />
             <input
               type="number"
@@ -220,7 +218,6 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setNewBook({ ...newBook, mrp: e.target.value })
               }
-              required
             />
             <input
               type="number"
@@ -229,7 +226,6 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setNewBook({ ...newBook, price: e.target.value })
               }
-              required
             />
             <input
               type="number"
@@ -238,7 +234,6 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setNewBook({ ...newBook, stock: e.target.value })
               }
-              required
             />
             <input
               type="file"

@@ -29,9 +29,9 @@ exports.addBook = async (req, res) => {
 
     const { title, author, genre, price,mrp, stock } = req.body;
 
-    if (!title || !author || !genre || !price || !stock) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+    // if (!title || !author || !genre || !price || !stock) {
+    //   return res.status(400).json({ message: "All fields are required" });
+    // }
 
     const newBook = new Book({
       title,

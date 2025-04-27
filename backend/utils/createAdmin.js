@@ -4,7 +4,7 @@ const User = require("../models/User");
 require("dotenv").config();
 
 const createAdmin = async () => {
-  const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/bookstore";
+  const MONGO_URL = process.env.MONGO_URL || `mongodb+srv://booklovers4u:admin123@bookstorecluster.joqj7iq.mongodb.net/?retryWrites=true&w=majority&appName=BookStoreCluster`;
 
   try {
     await mongoose.connect(MONGO_URL);
@@ -20,7 +20,7 @@ const createAdmin = async () => {
 
     const adminUser = new User({
       name: "Admin",
-      email: "admin@bookstore.com",
+      email: "admin@booklovers.in",
       phone: "123456789",
       password: hashedPassword,
       address: "Admin Street",
