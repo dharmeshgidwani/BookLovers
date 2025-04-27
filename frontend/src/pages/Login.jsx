@@ -10,6 +10,8 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  console.log( `${import.meta.env.VITE_APP_API_URL}`)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);

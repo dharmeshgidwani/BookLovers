@@ -7,6 +7,8 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [originalBooks, setOriginalBooks] = useState([]);
 
+  console.log(`${import.meta.env.VITE_APP_API_URL}`);
+
   useEffect(() => {
     const fetchBooks = async () => {
       try {

@@ -10,8 +10,8 @@ const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-
 dotenv.config();
+console.log(process.env.MONGO_URI)
 const app = express();
 app.use(cors());
 app.use(express.json());
