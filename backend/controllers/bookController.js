@@ -35,7 +35,7 @@ exports.getBooks = async (req, res) => {
 
 exports.getBookById = async (req, res) => {
   try {
-    console.log("Received book ID:", req.params.id); // Log the received ID
+    console.log("Received book ID:", req.params.id); 
     const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ message: "Book not found" });
     res.status(200).json(book);
