@@ -46,7 +46,7 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-form">
-        <div className="branding">
+        <div className="branding1">
           <h1>Login</h1>
           <p>Welcome back, please login to continue</p>
         </div>
