@@ -96,10 +96,11 @@ exports.updateBook = async (req, res) => {
     if (bookType !== undefined) updateData.bookType = bookType;
     if (author !== undefined) updateData.author = author;
     if (genre !== undefined) updateData.genre = genre;
-    if (price !== undefined) updateData.price = price;
-    if (mrp !== undefined) updateData.mrp = mrp;
-    if (weight !== undefined) updateData.weight = weight;
-    if (stock !== undefined) updateData.stock = stock;
+    
+    if (price !== undefined && price !== "null") updateData.price = Number(price);
+    if (mrp !== undefined && mrp !== "null") updateData.mrp = Number(mrp);
+    if (weight !== undefined && weight !== "null") updateData.weight = Number(weight);
+    if (stock !== undefined && stock !== "null") updateData.stock = Number(stock);    
 
     // If there's an image, upload it to Cloudinary
     if (req.file) {
