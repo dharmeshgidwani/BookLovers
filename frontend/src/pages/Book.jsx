@@ -8,7 +8,7 @@ const Book = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
-  const [description, setDescription] = useState("Loading description...");
+  const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const { auth } = useContext(AuthContext);
@@ -123,8 +123,6 @@ const Book = () => {
     return <div className="book-page">Loading...</div>;
   }
 
-
-  console.log(book)
   return (
     <div className="book-page">
       <div className="book-container">
@@ -155,12 +153,9 @@ const Book = () => {
             </select>
           </div>
 
-          <p className="description">{description}</p>
+            <p className="description">{description}</p>
 
           <div className="book-buttons">
-            <button className="order-btn" onClick={handleOrder}>
-              Order Now
-            </button>
             <button className="add-to-cart-btn" onClick={handleAddToCart}>
               Add to Cart
             </button>
