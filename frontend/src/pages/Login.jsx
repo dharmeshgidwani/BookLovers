@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../css/Login.css";
 
@@ -15,11 +15,14 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, password }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, password }),
+        }
+      );
 
       const data = await res.json();
       setIsLoading(false);
@@ -45,10 +48,15 @@ function Login() {
 
   return (
     <div className="login-page">
+      <div className="branding-main">
+        <h1 className="brand-title">📚 Book Lovers</h1>
+        <p className="brand-subtitle">Your favorite stories await.</p>
+      </div>
+
       <div className="login-form">
         <div className="branding1">
-          <h1>Login</h1>
-          <p>Welcome back, please login to continue</p>
+          <h2>Login</h2>
+          <p>Welcome back, start your next adventure!</p>
         </div>
         <form onSubmit={handleSubmit}>
           <input
@@ -70,6 +78,10 @@ function Login() {
           <button type="submit" disabled={isLoading} className="login-button">
             {isLoading ? "Logging in..." : "Login"}
           </button>
+
+          <p className="link-text">
+            Don't have an account? <Link to="/signup">Signup</Link>
+          </p>
         </form>
       </div>
     </div>

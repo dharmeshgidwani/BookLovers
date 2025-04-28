@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "../css/Signup.css";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -15,10 +16,8 @@ function Signup() {
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/signup`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email,phone, password, address }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, password, address }),
       });
   
       const data = await res.json();
@@ -37,45 +36,60 @@ function Signup() {
 
   return (
     <div className="signup-page">
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        /><br />
-        <input
-          type="email"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /><br />
-        <input
-          type="number"
-          placeholder="Phone Number"
-          required
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        /><br />
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        /><br />
-        <input
-          type="text"
-          placeholder="Address"
-          required
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        /><br />
-        <button type="submit">Signup</button>
-      </form>
+      <div className="branding-top">
+        <h1 className="brand-title">📚 Book Lovers</h1>
+        <p className="brand-subtitle">Your journey into the world of books starts here!</p>
+      </div>
+
+      <div className="signup-form">
+        <h2>Create Account</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="number"
+            placeholder="Phone Number"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            required
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="input-field"
+          />
+          <button type="submit" className="signup-button">Signup</button>
+        </form>
+        <p className="link-text">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 }

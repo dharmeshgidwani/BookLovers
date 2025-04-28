@@ -1,0 +1,117 @@
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 6rem;
+  background: linear-gradient(135deg, #7b4397, #dc2430, #7b4397);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.branding-top {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeSlideDown 1.5s ease forwards;
+}
+
+.brand-title {
+  font-size: 3rem;
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+}
+
+.brand-subtitle {
+  font-size: 1.2rem;
+  color: #eee;
+  margin-top: 0.5rem;
+}
+
+.signup-form {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+  width: 100%;
+  max-width: 400px;
+  animation: fadeIn 1.2s ease;
+}
+
+.signup-form h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.9rem;
+  margin: 0.7rem 0;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.input-field:focus {
+  border-color: #dc2430;
+  box-shadow: 0 0 8px rgba(220, 36, 48, 0.6);
+  outline: none;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #dc2430;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup-button:hover {
+  background: #7b4397;
+}
+
+.link-text {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.link-text a {
+  color: #dc2430;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-text a:hover {
+  text-decoration: underline;
+}
+
+@keyframes fadeSlideDown {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+  .signup-form {
+    padding: 1.5rem 2rem;
+  }
+}

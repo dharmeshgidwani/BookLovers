@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../css/Home.css";
+import { FaShippingFast, FaRegQuestionCircle, FaBookOpen } from 'react-icons/fa';
 
 function Home() {
   const [books, setBooks] = useState([]);
@@ -10,7 +11,9 @@ function Home() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books`);
+        const res = await fetch(
+          `${import.meta.env.VITE_APP_API_URL}/api/books`
+        );
         const data = await res.json();
         setBooks(data);
         setOriginalBooks(data);
@@ -21,8 +24,6 @@ function Home() {
     fetchBooks();
   }, []);
 
-  console.log(books)
-
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -30,10 +31,11 @@ function Home() {
     if (query.trim() === "") {
       setBooks(originalBooks);
     } else {
-      const filteredBooks = originalBooks.filter((book) =>
-        (book.title?.toLowerCase() || "").includes(query.toLowerCase()) ||
-        (book.author?.toLowerCase() || "").includes(query.toLowerCase()) ||
-        (book.genre?.toLowerCase() || "").includes(query.toLowerCase())
+      const filteredBooks = originalBooks.filter(
+        (book) =>
+          (book.title?.toLowerCase() || "").includes(query.toLowerCase()) ||
+          (book.author?.toLowerCase() || "").includes(query.toLowerCase()) ||
+          (book.genre?.toLowerCase() || "").includes(query.toLowerCase())
       );
       setBooks(filteredBooks);
     }
@@ -43,15 +45,33 @@ function Home() {
 
   return (
     <div className="home-page">
+      {/* Branding Section */}
       <div className="branding">
-        <h1>Book Lovers</h1>
-        <p>Babies Love for Books....</p>
+        <h1>📚 Book Lovers</h1>
+        <p>Discover Your Next Great Read...</p>
         <div className="tagline">
-          <p>"Explore, Discover, and Fall in Love with Books."</p>
+          <p>"Explore, Discover, and Fall in Love with Books." 📖✨</p>
+        </div>
+      </div>
+      <div className="company-info">
+        <div className="info-card">
+          <FaBookOpen />
+          <h3>Wide Selection</h3>
+          <p>Explore a vast collection of books across various genres.</p>
+        </div>
+        <div className="info-card">
+          <FaShippingFast />
+          <h3>Fast Delivery</h3>
+          <p>Get your favorite books delivered swiftly to your doorstep.</p>
+        </div>
+        <div className="info-card">
+          <FaRegQuestionCircle />
+          <h3>Customer Support</h3>
+          <p>We're here to help you 24/7 with any inquiries.</p>
         </div>
       </div>
 
-      {/* Search bar with icon */}
+      {/* Search Bar */}
       <div className="search-bar">
         <div className="search-input-wrapper">
           <svg
@@ -62,7 +82,11 @@ function Home() {
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0a7 7 0 10-9.9 0 7 7 0 009.9 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35m0 0a7 7 0 10-9.9 0 7 7 0 009.9 0z"
+            />
           </svg>
           <input
             type="text"
@@ -73,6 +97,7 @@ function Home() {
         </div>
       </div>
 
+      {/* Books List by Genre */}
       {genres.length === 0 ? (
         <p>No books found matching your search!</p>
       ) : (
@@ -84,16 +109,12 @@ function Home() {
                 .filter((book) => book.genre === genre)
                 .map((book) => (
                   <div key={book._id} className="book-item">
-                    <img
-                      src={book.imageUrl}
-                      alt={book.title}
-                      className="book-image"
-                    />
+                    <img src={book.imageUrl} alt={book.title} />
                     <h3>{book.title}</h3>
                     <p>Author: {book.author}</p>
                     <p>MRP: ₹{book.mrp}</p>
                     <p>Price: ₹{book.price}</p>
-                    <p>Book Type: {book.bookType}</p>
+                    <p>Type: {book.bookType}</p>
                     <Link to={`/book/${book._id}`} className="btn">
                       View Details
                     </Link>
