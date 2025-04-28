@@ -10,8 +10,6 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  console.log( `${import.meta.env.VITE_APP_API_URL}`)
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -27,7 +25,6 @@ function Login() {
       setIsLoading(false);
 
       if (res.ok) {
-        console.log("Logging in with: ", data.user, data.token);
         login(data.user, data.token);
 
         // Redirect based on role
@@ -48,26 +45,33 @@ function Login() {
 
   return (
     <div className="login-page">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          placeholder="Phone Number"
-          required
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        /><br />
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        /><br />
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+      <div className="login-form">
+        <div className="branding">
+          <h1>Login</h1>
+          <p>Welcome back, please login to continue</p>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="number"
+            placeholder="Phone Number"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+          <button type="submit" disabled={isLoading} className="login-button">
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
