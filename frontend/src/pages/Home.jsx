@@ -21,6 +21,8 @@ function Home() {
     fetchBooks();
   }, []);
 
+  console.log(books)
+
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);

@@ -18,7 +18,9 @@ const Cart = () => {
   const fetchBookDetails = async (bookId) => {
     if (!bookId) return {}; // Return an empty object if bookId is not provided
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`
+      );
       const bookData = await response.json();
       if (!response.ok)
         throw new Error(bookData.message || "Error fetching book details");
@@ -43,11 +45,10 @@ const Cart = () => {
       );
       setCartItems(updatedCart);
     };
-      if (cartInitialized && user && user.id && cartItems.length > 0) {
+    if (cartInitialized && user && user.id && cartItems.length > 0) {
       fetchCartWithDetails();
     }
   }, [cartInitialized, user, cartItems.length]);
-  
 
   // Remove item from cart
   const handleRemoveFromCart = async (itemId) => {
@@ -88,17 +89,20 @@ const Cart = () => {
     );
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          books,
-          totalPrice,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            books,
+            totalPrice,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -114,7 +118,6 @@ const Cart = () => {
     }
   };
 
-
   // Render cart
   if (!cartInitialized) return <div>Loading...</div>;
 
@@ -124,7 +127,12 @@ const Cart = () => {
     <div className="cart">
       <h2>Your Cart</h2>
       {cartItems.length === 0 ? (
-        <p>Your cart is empty</p>
+        <div className="empty-cart">
+          <img src="/empty-cart.png" alt="Empty Cart" />
+          <h3>Your cart is feeling lonely!</h3>
+          <p>Looks like you haven't added anything yet.</p>
+          <button onClick={() => navigate("/")}>Go to Shop</button>
+        </div>
       ) : (
         <>
           <ul>
@@ -132,10 +140,7 @@ const Cart = () => {
               <li key={item.bookId} className="cart-item">
                 <div className="cart-item-content">
                   <div className="cart-item-image">
-                    <img
-                      src={`${import.meta.env.VITE_APP_API_URL}/${item.imageUrl}`}
-                      alt={item.title}
-                    />
+                    <img src={item.imageUrl} alt={item.title} />
                   </div>
                   <div className="cart-item-details">
                     <h4>{item.title}</h4>
@@ -151,8 +156,10 @@ const Cart = () => {
             ))}
           </ul>
           <h3>Total: ₹{totalAmount}</h3>
-          <button onClick={handleBuyNow}>Buy Now</button>
-          <button onClick={clearCart}>Clear Cart</button>
+          <div className="cart-buttons">
+            <button onClick={handleBuyNow}>Buy Now</button>
+            <button onClick={clearCart}>Clear Cart</button>
+          </div>
         </>
       )}
     </div>

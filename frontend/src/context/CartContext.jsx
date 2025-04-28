@@ -22,7 +22,7 @@ export const CartProvider = ({ children }) => {
       }
   
       try {
-        const res = await fetch(`http://localhost:5001/api/cart/${auth.user.id}`);
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/cart/${auth.user.id}`);
         const data = await res.json();
   
         if (Array.isArray(data)) {
@@ -58,7 +58,7 @@ export const CartProvider = ({ children }) => {
 
     const updateCart = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/cart/`, {
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/cart/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export const CartProvider = ({ children }) => {
       return exists
         ? prev.map((item) =>
             item.bookId === book._id
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + book.quantity }
               : item
           )
         : [...prev, { bookId: book._id, quantity: 1 }];
