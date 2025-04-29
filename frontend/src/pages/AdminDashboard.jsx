@@ -173,7 +173,7 @@ const AdminDashboard = () => {
       (book?.title || "").toLowerCase().includes(searchTerm) ||
       (book?.author || "").toLowerCase().includes(searchTerm) ||
       (book?.genre || "").toLowerCase().includes(searchTerm)
-  );  
+  );
 
   const filteredOrders = orders.filter((order) => {
     const userName = (order?.userId?.name || "").toLowerCase();
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
     const bookTitles = (order?.books || [])
       .map((b) => (b?.title || "").toLowerCase())
       .join(" ");
-  
+
     return (
       userName.includes(searchTerm) ||
       userEmail.includes(searchTerm) ||
@@ -190,7 +190,6 @@ const AdminDashboard = () => {
       orderId.includes(searchTerm)
     );
   });
-  
 
   const filteredPendingOrders = filteredOrders.filter(
     (order) => order.status === "Pending"
@@ -232,8 +231,6 @@ const AdminDashboard = () => {
           {showOrders ? "Hide Orders" : "View Orders"}
         </button>
       </div>
-
-
 
       {/* Book Management Form */}
       {showForm && (
@@ -317,12 +314,28 @@ const AdminDashboard = () => {
       )}
 
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search by book title, author, genre, or orderID, User-Name, Email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-        />
+        <div className="search-input-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="search-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35m0 0a7 7 0 10-9.9 0 7 7 0 009.9 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by title, author, or genre"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+          />
+        </div>
       </div>
 
       {/* Books List */}
