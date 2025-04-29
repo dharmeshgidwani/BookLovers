@@ -1,41 +1,84 @@
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #005d6e;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+.navbar-logo a {
+  font-size: 2rem;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 2rem;
+  font-size: 1rem;
+}
+
+.navbar-links a:hover {
+  color: #ffc107;
+}
+
+.navbar-links .logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 2rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.navbar-links .logout-btn:hover {
+  background-color: #c82333;
+}
+
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .navbar-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
     background-color: #005d6e;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    padding: 1rem 2rem;
   }
-  
-  .navbar-logo a {
-    font-size: 2rem;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
+
+  .navbar-links.active {
+    display: flex;
   }
-  
-  .navbar-links a {
-    color: white;
-    text-decoration: none;
-    margin-left: 2rem;
-    font-size: 1rem;
+
+  .navbar-links a, .navbar-links .logout-btn {
+    margin: 0.8rem 0;
+    font-size: 1.1rem;
+    text-align: center;
   }
-  
-  .navbar-links a:hover {
-    color: #ffc107;
-  }
-  
-  .navbar-links button.logout-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .navbar-links button.logout-btn:hover {
-    background-color: #c82333;
-  }
-  
+}

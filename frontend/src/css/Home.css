@@ -200,41 +200,79 @@
 }
 
 @media (max-width: 768px) {
-  .company-info {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .info-card {
-    width: 80%;
-    margin-bottom: 1.5rem;
-  }
-}
-@media (max-width: 768px) {
   .branding {
-    padding: 2rem 1.5rem;
+    padding: 2rem 1rem;
+  }
+
+  .branding h1 {
+    font-size: 2.5rem;
+  }
+
+  .branding p {
+    font-size: 1.2rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
   }
 
   .company-info {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .info-card {
-    width: 80%;
-    padding: 1.4rem;
+    width: 100%;
+    padding: 1.5rem;
   }
 
   .search-input-wrapper {
-    width: 100%;
+    width: 90%;
   }
 
   .books-list {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
   .book-item {
-    padding: 1.8rem;
+    padding: 1.5rem;
+  }
+
+  .book-item img {
+    height: 200px;
+  }
+
+  .book-item h3 {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .branding h1 {
+    font-size: 2rem;
+  }
+
+  .branding p,
+  .tagline {
+    font-size: 1rem;
+  }
+
+  .book-item img {
+    height: 160px;
+  }
+
+  .book-item h3 {
+    font-size: 1.3rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
   }
 }

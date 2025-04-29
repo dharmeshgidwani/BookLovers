@@ -3,6 +3,8 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../css/Cart.css";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const Cart = () => {
   const { cartItems, setCartItems, clearCart, cartInitialized } = useCart();
@@ -10,13 +12,15 @@ const Cart = () => {
   const navigate = useNavigate();
   const user = auth?.user || JSON.parse(localStorage.getItem("user"));
 
+  const [isOrderPlaced, setisOrderPlaced] = useState(false)
+
   const totalAmount = cartItems?.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
   const fetchBookDetails = async (bookId) => {
-    if (!bookId) return {}; // Return an empty object if bookId is not provided
+    if (!bookId) return {}; 
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`
@@ -59,35 +63,50 @@ const Cart = () => {
 
   const handleBuyNow = async () => {
     if (!cartItems.length) {
-      alert("Your cart is empty!");
+      toast.warn("Your cart is empty");
       return;
     }
-
+  
     if (!user || !user.id) {
-      alert("Please log in to place an order.");
+      toast.error("Please log in to place an order.");
       navigate("/login");
       return;
     }
-
-    const books = cartItems.map((item) => {
-      if (!item._id || !item.quantity || item.quantity <= 0) {
-        alert("Invalid book data found in your cart.");
-        throw new Error("Invalid book data found");
-      }
-
-      return {
-        bookId: item._id,
-        title: item.title,
-        quantity: item.quantity,
-        price: item.price,
-      };
-    });
-
+  
+    // Validate stock availability
+    const books = await Promise.all(
+      cartItems.map(async (item) => {
+        if (!item._id || !item.quantity || item.quantity <= 0) {
+          toast.error("Invalid book data found in your cart.");
+          throw new Error("Invalid book data found");
+        }
+  
+        // Fetch the current stock from the server
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_API_URL}/api/books/${item._id}`
+        );
+        const bookData = await response.json();
+  
+        // If stock is less than required quantity, show an error toast
+        if (bookData.stock < item.quantity) {
+          toast.error(`Not enough stock for "${item.title}". Only ${bookData.stock} left.`);
+          throw new Error(`Not enough stock for "${item.title}". Only ${bookData.stock} left.`);
+        }
+  
+        return {
+          bookId: item._id,
+          title: item.title,
+          quantity: item.quantity,
+          price: item.price,
+        };
+      })
+    );
+  
     const totalPrice = books.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-
+  
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/orders/create`,
@@ -103,20 +122,22 @@ const Cart = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to place the order.");
       }
-
+  
       clearCart();
-      alert("Order placed successfully!");
+      toast.success("Order placed successfully!");
+      setisOrderPlaced(true);
     } catch (error) {
       console.error("Order error:", error);
-      alert("Something went wrong while placing the order. Please try again.");
+      toast.error("Something went wrong while placing the order. Please try again.");
     }
   };
+  
 
   // Render cart
   if (!cartInitialized) return <div>Loading...</div>;
@@ -125,6 +146,15 @@ const Cart = () => {
 
   return (
     <div className="cart">
+    <ToastContainer position="top-right" autoClose={3000} />
+
+    {isOrderPlaced && (
+      <div className="order-success-message">
+        <p>
+          🎉 Your order is placed! Our admin will contact you on your WhatsApp number for payment details.
+        </p>
+      </div>
+    )}
       <h2>Your Cart</h2>
       {cartItems.length === 0 ? (
         <div className="empty-cart">

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "../css/Home.css";
+import { ToastContainer, toast } from "react-toastify";
 import { FaShippingFast, FaRegQuestionCircle, FaBookOpen } from 'react-icons/fa';
+import 'react-toastify/dist/ReactToastify.css';
+import "../css/Home.css";
 
 function Home() {
   const [books, setBooks] = useState([]);
@@ -15,10 +17,16 @@ function Home() {
           `${import.meta.env.VITE_APP_API_URL}/api/books`
         );
         const data = await res.json();
-        setBooks(data);
-        setOriginalBooks(data);
+
+        if (res.ok) {
+          setBooks(data);
+          setOriginalBooks(data);
+        } else {
+          toast.error("❌ Failed to load books.");
+        }
       } catch (err) {
         console.error("Error fetching books:", err);
+        toast.error("❌ Something went wrong while fetching books.");
       }
     };
     fetchBooks();
@@ -38,6 +46,10 @@ function Home() {
           (book.genre?.toLowerCase() || "").includes(query.toLowerCase())
       );
       setBooks(filteredBooks);
+
+      if (filteredBooks.length === 0) {
+        toast.warn("No books found matching your search!");
+      }
     }
   };
 
@@ -45,6 +57,9 @@ function Home() {
 
   return (
     <div className="home-page">
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" />
+
       {/* Branding Section */}
       <div className="branding">
         <h1>📚 Book Lovers</h1>
@@ -53,6 +68,7 @@ function Home() {
           <p>"Explore, Discover, and Fall in Love with Books." 📖✨</p>
         </div>
       </div>
+
       <div className="company-info">
         <div className="info-card">
           <FaBookOpen />

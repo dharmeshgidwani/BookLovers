@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import "../css/Signup.css";
 
 function Signup() {
@@ -12,30 +14,49 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    const loadingToast = toast.loading("Creating your account...");
+
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone, password, address }),
       });
-  
+
       const data = await res.json();
-      
-      if (res.status === 201) {  
-        alert("Signup successful!");
-        navigate("/login");
+
+      if (res.status === 201) {
+        toast.update(loadingToast, {
+          render: "Signup successful!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setTimeout(() => navigate("/login"), 3000); 
       } else {
-        alert(data.message || "Signup failed");
+        toast.update(loadingToast, {
+          render: data.message || "Signup failed",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
     } catch (err) {
-      console.error(err);  
-      alert("Something went wrong. Please try again.");
+      console.error(err);
+      toast.update(loadingToast, {
+        render: "Something went wrong. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     }
-  };  
+  };
 
   return (
     <div className="signup-page">
+      <ToastContainer position="top-right" />
+      
       <div className="branding-top">
         <h1 className="brand-title">📚 Book Lovers</h1>
         <p className="brand-subtitle">Your journey into the world of books starts here!</p>
@@ -43,7 +64,7 @@ function Signup() {
 
       <div className="signup-form">
         <h2>Create Account</h2>
-        <form onSubmit={handleSubmit}>
+        <form className="signup-form" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Name"
@@ -54,7 +75,7 @@ function Signup() {
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (Optional)"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -62,7 +83,7 @@ function Signup() {
           />
           <input
             type="number"
-            placeholder="Phone Number"
+            placeholder="Whatsapp Number"
             required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}

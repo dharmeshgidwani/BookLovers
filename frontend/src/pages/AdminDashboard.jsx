@@ -13,11 +13,13 @@ const AdminDashboard = () => {
     stock: "",
     bookType: "",
     weight: "",
+    image: null,
   });
   const [editingBookId, setEditingBookId] = useState(null);
   const [showBooks, setShowBooks] = useState(false);
   const [showOrders, setShowOrders] = useState(true);
   const [showForm, setShowForm] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchBooks();
@@ -52,7 +54,7 @@ const AdminDashboard = () => {
       title: "",
       author: "",
       price: "",
-      mrp:"",
+      mrp: "",
       genre: "",
       stock: "",
       imageUrl: "",
@@ -65,7 +67,7 @@ const AdminDashboard = () => {
   const handleAddOrUpdateBook = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-  
+
     if (newBook.title) formData.append("title", newBook.title);
     if (newBook.bookType) formData.append("bookType", newBook.bookType);
     if (newBook.author) formData.append("author", newBook.author);
@@ -76,14 +78,14 @@ const AdminDashboard = () => {
     if (newBook.stock !== undefined) formData.append("stock", newBook.stock);
     if (newBook.image) formData.append("image", newBook.image);
 
-    console.log(newBook)
-  
+    console.log(newBook);
+
     const url = editingBookId
       ? `${import.meta.env.VITE_APP_API_URL}/api/books/${editingBookId}`
       : `${import.meta.env.VITE_APP_API_URL}/api/books/add`;
-  
+
     const method = editingBookId ? "PUT" : "POST";
-  
+
     const res = await fetch(url, {
       method,
       body: formData,
@@ -91,23 +93,23 @@ const AdminDashboard = () => {
 
     const data = await res.json();
 
-
-  
     if (res.ok) {
       alert(`Book ${editingBookId ? "updated" : "added"} successfully!`);
       fetchBooks();
       resetForm();
     } else {
-      console.log(data)
+      console.log(data);
       alert("Error saving book");
     }
   };
-  
 
   const handleDelete = async (bookId) => {
-    const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`,
+      {
+        method: "DELETE",
+      }
+    );
 
     if (res.ok) {
       alert("Book deleted successfully!");
@@ -149,12 +151,15 @@ const AdminDashboard = () => {
   };
 
   const handleOrderStatusUpdate = async (orderId, status) => {
-    const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-  
+    const res = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }
+    );
+
     if (res.ok) {
       alert("Order status updated successfully!");
       fetchOrders();
@@ -162,7 +167,37 @@ const AdminDashboard = () => {
       alert("Error updating order status.");
     }
   };
+
+  const filteredBooks = books.filter(
+    (book) =>
+      (book?.title || "").toLowerCase().includes(searchTerm) ||
+      (book?.author || "").toLowerCase().includes(searchTerm) ||
+      (book?.genre || "").toLowerCase().includes(searchTerm)
+  );  
+
+  const filteredOrders = orders.filter((order) => {
+    const userName = (order?.userId?.name || "").toLowerCase();
+    const userEmail = (order?.userId?.email || "").toLowerCase();
+    const orderId = (order?._id || "").toLowerCase();
+    const bookTitles = (order?.books || [])
+      .map((b) => (b?.title || "").toLowerCase())
+      .join(" ");
   
+    return (
+      userName.includes(searchTerm) ||
+      userEmail.includes(searchTerm) ||
+      bookTitles.includes(searchTerm) ||
+      orderId.includes(searchTerm)
+    );
+  });
+  
+
+  const filteredPendingOrders = filteredOrders.filter(
+    (order) => order.status === "Pending"
+  );
+  const filteredShippedOrders = filteredOrders.filter(
+    (order) => order.status === "Shipped"
+  );
 
   return (
     <div className="admin-dashboard">
@@ -197,6 +232,8 @@ const AdminDashboard = () => {
           {showOrders ? "Hide Orders" : "View Orders"}
         </button>
       </div>
+
+
 
       {/* Book Management Form */}
       {showForm && (
@@ -240,9 +277,7 @@ const AdminDashboard = () => {
               type="number"
               placeholder="MRP"
               value={newBook.mrp}
-              onChange={(e) =>
-                setNewBook({ ...newBook, mrp: e.target.value })
-              }
+              onChange={(e) => setNewBook({ ...newBook, mrp: e.target.value })}
             />
             <input
               type="number"
@@ -281,12 +316,21 @@ const AdminDashboard = () => {
         </section>
       )}
 
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search by book title, author, genre, or orderID, User-Name, Email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+        />
+      </div>
+
       {/* Books List */}
       {showBooks && (
         <section className="book-list">
           <h3>Books List</h3>
           <ul>
-            {books.map((book) => (
+            {filteredBooks.map((book) => (
               <li key={book._id}>
                 <h4>
                   {book.title} by {book.author}
@@ -307,7 +351,7 @@ const AdminDashboard = () => {
         <section className="order-list">
           <h3>Pending Orders</h3>
           <ul>
-            {pendingOrders.length === 0 ? (
+            {filteredPendingOrders.length === 0 ? (
               <p>No pending orders.</p>
             ) : (
               pendingOrders.map((order) => (
@@ -341,7 +385,7 @@ const AdminDashboard = () => {
 
                           const date = new Date(dateTime);
                           return !isNaN(date.getTime())
-                            ? date.toLocaleString() 
+                            ? date.toLocaleString()
                             : "Invalid date";
                         })()}
                       </p>
@@ -354,7 +398,7 @@ const AdminDashboard = () => {
                     <ul>
                       {order.books.map((book, index) => (
                         <li key={index}>
-                          <strong>{book.title}</strong> 
+                          <strong>{book.title}</strong>
                           <p>Quantity: {book.quantity}</p>
                         </li>
                       ))}
@@ -390,7 +434,7 @@ const AdminDashboard = () => {
             {orders.length === 0 ? (
               <p>No orders available.</p>
             ) : (
-              shippedOrders.map((order) => (
+              filteredShippedOrders.map((order) => (
                 <li key={order._id}>
                   <h4>Order #{order._id}</h4>
                   <div className="order-details">

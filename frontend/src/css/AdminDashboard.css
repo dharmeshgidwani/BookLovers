@@ -261,4 +261,13 @@
     opacity: 0.9;
     transform: translateY(-1px);
   }
+  .search-bar {
+    margin: 1rem 0;
+  }
+  
+  .search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+  }
   

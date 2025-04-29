@@ -1,139 +1,185 @@
+/* Root styling for smoother font rendering and consistency */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .login-page {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 2rem 1rem;
   background: linear-gradient(-45deg, #8E2DE2, #4A00E0, #00C9FF, #92FE9D);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
-  overflow: hidden;
+  overflow: auto;
+  gap: 2rem;
+  box-sizing: border-box;
 }
 
 @keyframes gradientBG {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .login-form {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 2.5rem 3rem;
+  padding: 3rem 2.5rem;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   width: 100%;
   max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   animation: fadeIn 1s ease forwards;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .branding1 {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
-.branding1 h1 {
-  font-size: 2.5rem;
+.branding1 h2 {
+  font-size: 2.2rem;
   color: #4A00E0;
-  font-weight: 700;
+  font-weight: bold;
+  margin: 0;
 }
 
 .branding1 p {
-  font-size: 1.1rem;
-  color: #555;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #666;
 }
 
 .input-field {
   width: 100%;
-  padding: 1rem;
-  margin: 1rem 0;
+  padding: 0.9rem 1.1rem;
   border: 1px solid #ccc;
   border-radius: 30px;
   font-size: 1rem;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
 }
 
 .input-field:focus {
-  border: 1px solid #4A00E0;
+  border-color: #4A00E0;
+  background: #fff;
   outline: none;
-  box-shadow: 0 0 10px rgba(74, 0, 224, 0.4);
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
 }
 
 .login-button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.95rem;
   background: linear-gradient(90deg, #8E2DE2, #4A00E0);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 30px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .login-button:hover {
   background: linear-gradient(90deg, #00C9FF, #92FE9D);
+  transform: scale(1.02);
 }
 
 .login-button:disabled {
-  background: #ccc;
+  background: #ddd;
   cursor: not-allowed;
 }
 
-@media (max-width: 480px) {
-  .login-form {
-    padding: 2rem;
-  }
-
-  .branding1 h1 {
-    font-size: 2rem;
-  }
-
-  .branding1 p {
-    font-size: 1rem;
-  }
-}
-.branding-main {
-  position: absolute;
-  top: 5%;
+.link-text {
   text-align: center;
-  animation: slideDown 1.5s ease forwards;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.link-text a {
+  color: #4A00E0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link-text a:hover {
+  text-decoration: underline;
+}
+
+.branding-main {
+  text-align: center;
+  animation: slideDown 1.2s ease forwards;
 }
 
 .brand-title {
   font-size: 3rem;
   color: #ffffff;
   font-weight: 800;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  margin-bottom: 0.5rem;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0.3rem;
 }
 
 .brand-subtitle {
   font-size: 1.2rem;
-  color: #f0f0f0;
+  color: #eeeeee;
   font-weight: 400;
 }
 
 @keyframes slideDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
+@media (max-width: 480px) {
+  .login-form {
+    padding: 2rem;
+    gap: 1rem;
+  }
+
+  .branding1 h2 {
+    font-size: 1.8rem;
+  }
+
+  .branding1 p {
+    font-size: 0.95rem;
+  }
+
+  .brand-title {
+    font-size: 2.4rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
+  }
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center horizontally */
+  width: 100%;
+}
+
+.input-field {
+  width: 100%; /* takes full width of form */
+  max-width: 320px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}

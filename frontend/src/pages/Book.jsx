@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../css/Book.css";
+import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import { useCart } from "../context/CartContext"; 
+import "react-toastify/dist/ReactToastify.css";
+import "../css/Book.css";
 
 const Book = () => {
   const { id } = useParams();
@@ -73,17 +75,17 @@ const Book = () => {
   // Add to Cart handler
   const handleAddToCart = () => {
     if (!user) {
-      alert("Please log in to add items to cart.");
+      toast.info("Please log in to add items to cart.");
       return;
     }
     addToCart({ ...book, quantity });
-    alert("Book added to cart!");
+    toast.success("Book added to cart!");
   };
 
   // Order Now handler (unchanged)
   const handleOrder = async () => {
     if (!user) {
-      alert("Please log in to place an order.");
+      toast.info("Please log in to place an order.");
       return;
     }
 
@@ -110,12 +112,12 @@ const Book = () => {
       const data = await res.json();
 
       if (data._id) {
-        alert("Order placed successfully!");
+        toast.success("Order placed successfully!");
       }
     } catch (err) {
       console.log(err);
       console.error("Error placing order:", err);
-      alert(`Failed to place the order: ${err.message}`);
+      toast.error(`Failed to place the order: ${err.message}`);
     }
   };
 
@@ -125,6 +127,9 @@ const Book = () => {
 
   return (
     <div className="book-page">
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" />
+
       <div className="book-container">
         <img
           src={book.imageUrl}

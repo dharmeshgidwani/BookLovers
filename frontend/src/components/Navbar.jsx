@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import '../css/Navbar.css';
 
@@ -7,14 +7,17 @@ function Navbar() {
   const { auth, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  if (location.pathname === "/login" || location.pathname === "/signup") {
-    return null;
-  }
+  if (location.pathname === "/login" || location.pathname === "/signup") return null;
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   return (
@@ -22,16 +25,19 @@ function Navbar() {
       <div className="navbar-logo">
         <Link to="/">Book Lovers</Link>
       </div>
-      <div className="navbar-links">
+
+      <div className="hamburger" onClick={toggleMenu}>
+        ☰
+      </div>
+
+      <div className={`navbar-links ${menuOpen ? 'active' : ''}`}>
         <Link to="/">Home</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/cart">Cart</Link>
         {auth.user ? (
           <>
             <Link to="/profile">Profile</Link>
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </>
         ) : (
           <Link to="/login">Login</Link>

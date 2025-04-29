@@ -1,6 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import "../css/Login.css";
 
 function Login() {
@@ -13,6 +15,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    const loadingToast = toast.loading("Logging in...");
 
     try {
       const res = await fetch(
@@ -28,6 +32,13 @@ function Login() {
       setIsLoading(false);
 
       if (res.ok) {
+        toast.update(loadingToast, {
+          render: "Login successful!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+
         login(data.user, data.token);
 
         // Redirect based on role
@@ -37,17 +48,29 @@ function Login() {
           navigate("/");
         }
       } else {
-        alert(data.message || "❌ Login failed");
+        toast.update(loadingToast, {
+          render: data.message || "Login failed",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
       }
     } catch (err) {
       setIsLoading(false);
       console.error("Error during login:", err);
-      alert("❌ Something went wrong. Please try again.");
+      toast.update(loadingToast, {
+        render: "Something went wrong. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     }
   };
 
   return (
     <div className="login-page">
+      <ToastContainer position="top-right" />
+      
       <div className="branding-main">
         <h1 className="brand-title">📚 Book Lovers</h1>
         <p className="brand-subtitle">Your favorite stories await.</p>
@@ -58,7 +81,7 @@ function Login() {
           <h2>Login</h2>
           <p>Welcome back, start your next adventure!</p>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="number"
             placeholder="Phone Number"
