@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const statusHistorySchema = new mongoose.Schema({
   status: {
     type: String,
-    enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+    enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Book Added", "Order Updated"],
     required: true,
   },
   changedAt: {
@@ -45,28 +45,43 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
-    default: "pending",
+    enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Book Added","Order Updated"],
+    default: "Pending",
   },
-  statusHistory: [statusHistorySchema], 
+  statusHistory: [statusHistorySchema],
   createdAt: {
     type: Date,
     default: Date.now,
   },
   createdDateTime: {
     type: String,
-    default: () => new Date().toLocaleString(), 
+    default: () => new Date().toLocaleString(),
+  },
+  amountPaid: {
+    type: Number,
+    default: 0,
+  },
+
+  amountPending: {
+    type: Number,
+    required: true,
   },
 });
 
 orderSchema.pre('save', function (next) {
-  if (this.isModified('status')) {
+  this.totalPrice = this.books.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  this.amountPending = this.totalPrice - this.amountPaid;
+
+  if (this.isModified('status') && !this.isNew) {
     this.statusHistory.push({
       status: this.status,
       changedAt: new Date(),
     });
   }
+
   next();
 });
+
 
 module.exports = mongoose.model("Order", orderSchema);

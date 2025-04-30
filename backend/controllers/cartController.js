@@ -5,25 +5,19 @@ const { ObjectId } = require('mongoose').Types;
 
 exports.getCart = async (req, res) => {
   const userId = req.params.userId;
-  console.log("Getting cart for userId:", userId); // ✅
 
   try {
     const userObjectId = new mongoose.Types.ObjectId(userId); 
     const user = await User.findById(userObjectId);
 
     if (!user) {
-      console.log("User not found");
       return res.status(404).json({ message: "User not found." });
     }
-
-    console.log("User found:", user.name);
-    console.log("User's cart:", user.cart); // ✅
 
     const cartWithDetails = await Promise.all(
       user.cart.map(async (item) => {
         const book = await Book.findById(item.bookId);
         if (!book) {
-          console.log("Book not found for ID:", item.bookId); // ✅
           return null;
         }
 
@@ -39,7 +33,6 @@ exports.getCart = async (req, res) => {
     );
 
     const validCartItems = cartWithDetails.filter(item => item !== null);
-    console.log("Returning cart items:", validCartItems); // ✅
 
     res.status(200).json(validCartItems);
   } catch (error) {
@@ -53,8 +46,6 @@ exports.updateCart = async (req, res) => {
   const { userId, cartItems } = req.body;
 
   try {
-    console.log("Updating Cart for User ID:", userId);
-    console.log("New Cart Items:", cartItems);
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },  
@@ -65,8 +56,6 @@ exports.updateCart = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found." });
     }
-
-    console.log("Updated Cart:", updatedUser.cart);  
 
     res.status(200).json({ message: "Cart updated successfully.", cart: updatedUser.cart });
   } catch (error) {

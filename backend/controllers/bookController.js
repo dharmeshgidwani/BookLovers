@@ -35,7 +35,6 @@ exports.getBooks = async (req, res) => {
 
 exports.getBookById = async (req, res) => {
   try {
-    console.log("Received book ID:", req.params.id); 
     const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ message: "Book not found" });
     res.status(200).json(book);
@@ -47,11 +46,6 @@ exports.getBookById = async (req, res) => {
 
 exports.addBook = async (req, res) => {
   try {
-    console.log("Received data for new book:", req.body);
-    if (req.file) {
-      console.log("Received file:", req.file);
-    }
-
     const { title, author, genre, price, mrp, weight, stock, bookType } = req.body;
 
     // If there's an image, upload it to Cloudinary
@@ -85,8 +79,6 @@ exports.addBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
   try {
-    console.log("Received data for book update:", req.body);
-    console.log("Received file for update:", req.file);
 
     const { title, author, genre, price, mrp, stock, bookType, weight } = req.body;
 
@@ -127,7 +119,6 @@ exports.updateBook = async (req, res) => {
 
 exports.deleteBook = async (req, res) => {
   try {
-    console.log("Received request to delete book with ID:", req.params.id); 
     const book = await Book.findByIdAndDelete(req.params.id);
 
     if (!book) {

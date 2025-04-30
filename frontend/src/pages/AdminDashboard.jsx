@@ -20,6 +20,7 @@ const AdminDashboard = () => {
   const [showOrders, setShowOrders] = useState(true);
   const [showForm, setShowForm] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [amountPaid, setAmountPaid] = useState({});
 
   useEffect(() => {
     fetchBooks();
@@ -197,6 +198,40 @@ const AdminDashboard = () => {
   const filteredShippedOrders = filteredOrders.filter(
     (order) => order.status === "Shipped"
   );
+
+  const handleAmountPaidUpdate = async (orderId, amountPaid) => {
+    // Find the order object based on orderId (if needed)
+    const order = filteredPendingOrders.find(order => order._id === orderId);
+    if (!order) {
+      console.error("Order not found!");
+      return;
+    }
+  
+    const amountPending = order.totalPrice - amountPaid;
+  
+    const res = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}/updateAmountPaid`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountPaid, amountPending }),
+      }
+    );
+  
+    if (res.ok) {
+      alert("Amount Paid updated successfully!");
+      fetchOrders(); 
+    } else {
+      alert("Error updating amount details.");
+    }
+  };
+  
+  const handleAmountPaidChange = (orderId, value) => {
+    setAmountPaid((prevState) => ({
+      ...prevState,
+      [orderId]: value,
+    }));
+  };
 
   return (
     <div className="admin-dashboard">
@@ -387,6 +422,29 @@ const AdminDashboard = () => {
                       <strong>Order Date:</strong>{" "}
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
+                    <div className="amount-paid">
+                      <label htmlFor={`amount-paid-${order._id}`}>
+                        <strong>Amount Paid:</strong>
+                      </label>
+                      <input
+                        type="number"
+                        id={`amount-paid-${order._id}`}
+                        value={amountPaid[order._id] || order.amountPaid || ""}
+                        onChange={(e) =>
+                          handleAmountPaidChange(order._id, e.target.value)
+                        }
+                      />
+                      <button
+                        onClick={() =>
+                          handleAmountPaidUpdate(
+                            order._id,
+                            parseFloat(amountPaid[order._id] || 0)
+                          )
+                        }
+                      >
+                        Update
+                      </button>
+                    </div>
 
                     {order.statusHistory && order.statusHistory.length > 0 && (
                       <p>

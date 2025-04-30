@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import "../css/Profile.css"
+import { useNavigate, Link } from "react-router-dom";
+import "../css/Profile.css";
 
 const Profile = () => {
   const { auth } = useContext(AuthContext);
@@ -9,8 +9,16 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
   const [orders, setOrders] = useState([]);
+  const [editOrderId, setEditOrderId] = useState(null);
+  const [editableOrder, setEditableOrder] = useState(null);
+  const [newBookId, setNewBookId] = useState("");
+  const [newBookQty, setNewBookQty] = useState(1);
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -22,7 +30,9 @@ const Profile = () => {
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/user/${user.id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_APP_API_URL}/api/orders/user/${user.id}`
+        );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch orders");
         setOrders(data || []);
@@ -45,13 +55,16 @@ const Profile = () => {
   // Save updated profile
   const handleSave = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/users/update/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/users/update/${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to update profile");
@@ -63,7 +76,65 @@ const Profile = () => {
       alert("Failed to update profile.");
     }
   };
-  console.log(formData)
+
+  const handleEditOrder = (order) => {
+    setEditOrderId(order._id);
+    // Clone the books array to editableOrder state
+    setEditableOrder(
+      order.books.map((book) => ({
+        bookId: typeof book.bookId === "object" ? book.bookId._id : book.bookId,
+        title: book.title,
+        price: book.price,
+        quantity: book.quantity,
+      }))
+    );
+  };
+
+  const handleQuantityChange = (index, newQty) => {
+    const updatedBooks = [...editableOrder];
+    updatedBooks[index].quantity = parseInt(newQty);
+    setEditableOrder(updatedBooks);
+  };
+
+  const handleRemoveBook = (index) => {
+    const updatedBooks = [...editableOrder];
+    updatedBooks.splice(index, 1);
+    setEditableOrder(updatedBooks);
+  };
+
+  const handleSaveOrder = async (orderId) => {
+    try {
+      // Sending a PUT request to update the order details on the backend
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}/update`, // Note the updated URL
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updatedBooks: editableOrder }), // Sending updatedBooks as the body
+        }
+      );
+  
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to update order");
+  
+      // If successful, show an alert and reset the edit state
+      alert("Order updated!");
+      setEditOrderId(null);
+      setEditableOrder(null);
+  
+      // Refetch the updated list of orders for the user
+      const refreshed = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/user/${user.id}`
+      );
+      const updatedData = await refreshed.json();
+      setOrders(updatedData || []);
+    } catch (err) {
+      // Handle any errors during the update process
+      console.error("Error updating order:", err);
+      alert("Failed to update order.");
+    }
+  };
+  
 
   return (
     <div className="profile-page">
@@ -73,14 +144,25 @@ const Profile = () => {
         <div className="edit-form">
           <input name="name" value={formData.name} onChange={handleChange} />
           <input name="email" value={formData.email} onChange={handleChange} />
-          <input name="address" value={formData.address} onChange={handleChange} />
+          <input
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+          />
           <button onClick={handleSave}>Save</button>
         </div>
       ) : (
         <div className="user-details">
-          <p><strong>Name:</strong> {formData.name}</p>
-          <p><strong>Email:</strong> {formData.email}</p>
-          <p><strong>Address:</strong>{formData.address}</p>
+          <p>
+            <strong>Name:</strong> {formData.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {formData.email}
+          </p>
+          <p>
+            <strong>Address:</strong>
+            {formData.address}
+          </p>
           <button onClick={() => setEditMode(true)}>Edit</button>
         </div>
       )}
@@ -93,30 +175,107 @@ const Profile = () => {
         <ul className="order-history">
           {orders.map((order) => (
             <li key={order._id} className="order-card">
-              <p><strong>Order ID:</strong> {order._id}</p>
-              <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
-              <p><strong>Total:</strong> ₹{order.totalPrice}</p>
-              <p><strong>Status:</strong>{order.status} </p>
               <p>
-                        <strong>Last Status Update:</strong>{" "}
-                        {(() => {
-                          const lastStatusUpdate =
-                            order.statusHistory[order.statusHistory.length - 1];
-                          const dateTime = lastStatusUpdate.changedAt; 
-                          const date = new Date(dateTime);
-                          return !isNaN(date.getTime())
-                            ? date.toLocaleString() 
-                            : "Invalid date"; 
-                        })()}
+                <strong>Order ID:</strong> {order._id}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(order.createdAt).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Total:</strong> ₹{order.totalPrice}
+              </p>
+              <p>
+                <strong>Amount Pending:</strong> ₹{order.amountPending}
+              </p>
+              <p>
+                <strong>Amount Paid:</strong> ₹{order.amountPaid}
+              </p>
+              <p>
+                <strong>Status:</strong>
+                {order.status}{" "}
+              </p>
+              <p>
+                <strong>Last Status Update:</strong>{" "}
+                {(() => {
+                  const lastStatusUpdate =
+                    order.statusHistory && order.statusHistory.length > 0
+                      ? order.statusHistory[order.statusHistory.length - 1]
+                      : null;
+
+                  if (lastStatusUpdate) {
+                    const dateTime = lastStatusUpdate.changedAt;
+                    const date = new Date(dateTime);
+                    return !isNaN(date.getTime())
+                      ? date.toLocaleString()
+                      : "Invalid date";
+                  }
+                  return "No status updates";
+                })()}
+              </p>
+
+              {editOrderId === order._id ? (
+                <div className="edit-order-section">
+                  {editableOrder.map((book, idx) => (
+                    <div key={idx} className="editable-book">
+                      <p>
+                        <strong>Book ID:</strong> {book.bookId}
                       </p>
-              <ul>
-                {order.books.map((book, idx) => (
-                  <li key={idx}>
-                    <p><strong>Title:</strong> {book.bookId.title}</p>
-                    <p><strong>Quantity:</strong> {book.quantity}</p>
-                  </li>
-                ))}
-              </ul>
+                      <p>
+                        <strong>Title:</strong> {book.title}
+                      </p>
+                      <label>
+                        Quantity:
+                        <input
+                          type="number"
+                          min={1}
+                          value={book.quantity}
+                          onChange={(e) =>
+                            handleQuantityChange(idx, e.target.value)
+                          }
+                        />
+                      </label>
+                      <button onClick={() => handleRemoveBook(idx)}>
+                        Remove
+                      </button>
+                      <hr />
+                    </div>
+                  ))}
+
+                  <button onClick={() => handleSaveOrder(order._id)}>
+                    Save Order
+                  </button>
+                  <button onClick={() => setEditOrderId(null)}>Cancel</button>
+                </div>
+              ) : (
+                <>
+                  <ul>
+                    {order.books.map((book, idx) => (
+                      <li key={idx}>
+                        <p>
+                          <strong>Title:</strong> {book.bookId.title}
+                        </p>
+                        <p>
+                          <strong>Quantity:</strong> {book.quantity}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => handleEditOrder(order)}
+                    className="btn"
+                  >
+                    Edit Order
+                  </button>
+                  <Link
+                    to="/"
+                    state={{ activeOrderId: order._id }}
+                    className="btn"
+                  >
+                    Add More Books
+                  </Link>
+                </>
+              )}
             </li>
           ))}
         </ul>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { FaShippingFast, FaRegQuestionCircle, FaBookOpen } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,6 +9,8 @@ function Home() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [originalBooks, setOriginalBooks] = useState([]);
+  const location = useLocation();
+  const activeOrderId = location?.state?.activeOrderId;
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -52,6 +54,42 @@ function Home() {
       }
     }
   };
+
+  const handleAddToOrder = async (bookId) => {
+    const book = books.find((b) => b._id === bookId);
+    if (!book) {
+      toast.error("❌ Book not found.");
+      return;
+    }
+  
+    console.log("Active Order ID:", activeOrderId);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/${activeOrderId}/add-book`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bookId,
+            quantity: 1,
+            title: book.title,
+            price: book.price,
+          }),
+        }
+      );
+  
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      toast.success("✅ Book added to order!");
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Failed to add book to order.");
+    }
+  };
+  
+  
 
   const genres = [...new Set(books.map((book) => book.genre))];
 
@@ -134,6 +172,11 @@ function Home() {
                     <Link to={`/book/${book._id}`} className="btn">
                       View Details
                     </Link>
+                    {activeOrderId && (
+                      <button className="btn" onClick={() => handleAddToOrder(book._id)}>
+                        Add to Order
+                      </button>
+                    )}
                   </div>
                 ))}
             </div>
