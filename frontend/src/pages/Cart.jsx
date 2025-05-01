@@ -5,14 +5,13 @@ import { AuthContext } from "../context/AuthContext";
 import "../css/Cart.css";
 import { ToastContainer, toast } from "react-toastify";
 
-
 const Cart = () => {
   const { cartItems, setCartItems, clearCart, cartInitialized } = useCart();
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const user = auth?.user || JSON.parse(localStorage.getItem("user"));
 
-  const [isOrderPlaced, setisOrderPlaced] = useState(false)
+  const [isOrderPlaced, setisOrderPlaced] = useState(false);
 
   const totalAmount = cartItems?.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -20,7 +19,7 @@ const Cart = () => {
   );
 
   const fetchBookDetails = async (bookId) => {
-    if (!bookId) return {}; 
+    if (!bookId) return {};
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`
@@ -34,6 +33,8 @@ const Cart = () => {
       return {}; // Return an empty object on error to prevent breaking the cart
     }
   };
+
+
 
   useEffect(() => {
     const fetchCartWithDetails = async () => {
@@ -54,11 +55,48 @@ const Cart = () => {
     }
   }, [cartInitialized, user, cartItems.length]);
 
+  console.log(cartItems)
+
+  const handleClearCart = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/cart/${user.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to clear cart in database");
+      }
+
+      clearCart();
+    } catch (error) {
+      console.error("Clear cart error:", error);
+      toast.error("Failed to clear cart");
+    }
+  };
+
   // Remove item from cart
   const handleRemoveFromCart = async (itemId) => {
-    const updatedCart = cartItems.filter((item) => item.bookId !== itemId);
-    setCartItems(updatedCart);
-    // Optionally, update the cart in the database as well
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/cart/${user.id}/${itemId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to remove item from cart in database");
+      }
+
+      const updatedCart = cartItems.filter((item) => item.bookId !== itemId);
+      setCartItems(updatedCart);
+    } catch (error) {
+      console.error("Remove cart item error:", error);
+      toast.error("Failed to remove item from cart");
+    }
   };
 
   const handleBuyNow = async () => {
@@ -66,13 +104,13 @@ const Cart = () => {
       toast.warn("Your cart is empty");
       return;
     }
-  
+
     if (!user || !user.id) {
       toast.error("Please log in to place an order.");
       navigate("/login");
       return;
     }
-  
+
     // Validate stock availability
     const books = await Promise.all(
       cartItems.map(async (item) => {
@@ -80,19 +118,23 @@ const Cart = () => {
           toast.error("Invalid book data found in your cart.");
           throw new Error("Invalid book data found");
         }
-  
+
         // Fetch the current stock from the server
         const response = await fetch(
           `${import.meta.env.VITE_APP_API_URL}/api/books/${item._id}`
         );
         const bookData = await response.json();
-  
+
         // If stock is less than required quantity, show an error toast
         if (bookData.stock < item.quantity) {
-          toast.error(`Not enough stock for "${item.title}". Only ${bookData.stock} left.`);
-          throw new Error(`Not enough stock for "${item.title}". Only ${bookData.stock} left.`);
+          toast.error(
+            `Not enough stock for "${item.title}". Only ${bookData.stock} left.`
+          );
+          throw new Error(
+            `Not enough stock for "${item.title}". Only ${bookData.stock} left.`
+          );
         }
-  
+
         return {
           bookId: item._id,
           title: item.title,
@@ -101,12 +143,12 @@ const Cart = () => {
         };
       })
     );
-  
+
     const totalPrice = books.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-  
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/orders/create`,
@@ -122,19 +164,57 @@ const Cart = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to place the order.");
       }
-  
+
       clearCart();
       toast.success("Order placed successfully!");
       setisOrderPlaced(true);
     } catch (error) {
       console.error("Order error:", error);
-      toast.error("Something went wrong while placing the order. Please try again.");
+      toast.error(
+        "Something went wrong while placing the order. Please try again."
+      );
+    }
+  };
+
+  const handleQuantityChange = async (bookId, newQuantity) => {
+    const updatedCart = cartItems.map((item) =>
+      item.bookId === bookId ? { ...item, quantity: newQuantity } : item
+    );
+  
+    setCartItems(updatedCart);
+  
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/cart/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            cartItems: updatedCart.map((item) => ({
+              bookId: item.bookId,
+              quantity: item.quantity,
+            })),
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to update cart");
+      }
+  
+      toast.success("Cart updated");
+    } catch (error) {
+      console.error("Quantity update error:", error);
+      toast.error("Failed to update quantity");
     }
   };
   
@@ -142,19 +222,18 @@ const Cart = () => {
   // Render cart
   if (!cartInitialized) return <div>Loading...</div>;
 
-  console.log("cartItems", cartItems);
-
   return (
     <div className="cart">
-    <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
-    {isOrderPlaced && (
-      <div className="order-success-message">
-        <p>
-          🎉 Your order is placed! Our admin will contact you on your WhatsApp number for payment details.
-        </p>
-      </div>
-    )}
+      {isOrderPlaced && (
+        <div className="order-success-message">
+          <p>
+            🎉 Your order is placed! Our admin will contact you on your WhatsApp
+            number for payment details.
+          </p>
+        </div>
+      )}
       <h2>Your Cart</h2>
       {cartItems.length === 0 ? (
         <div className="empty-cart">
@@ -175,7 +254,25 @@ const Cart = () => {
                   <div className="cart-item-details">
                     <h4>{item.title}</h4>
                     <h5>by {item.author}</h5>
-                    <p>Quantity: {item.quantity}</p>
+                    <label>
+                      Quantity:
+                      <select
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            item.bookId,
+                            parseInt(e.target.value)
+                          )
+                        }
+                      >
+                        {[...Array(item.stock || 5)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
                     <p>Price: ₹{item.price * item.quantity}</p>
                   </div>
                   <button onClick={() => handleRemoveFromCart(item.bookId)}>
@@ -188,7 +285,7 @@ const Cart = () => {
           <h3>Total: ₹{totalAmount}</h3>
           <div className="cart-buttons">
             <button onClick={handleBuyNow}>Buy Now</button>
-            <button onClick={clearCart}>Clear Cart</button>
+            <button onClick={handleClearCart}>Clear Cart</button>
           </div>
         </>
       )}

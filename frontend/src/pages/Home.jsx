@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { FaShippingFast, FaRegQuestionCircle, FaBookOpen } from 'react-icons/fa';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+  FaShippingFast,
+  FaRegQuestionCircle,
+  FaBookOpen,
+} from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
 import "../css/Home.css";
 
 function Home() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [originalBooks, setOriginalBooks] = useState([]);
+  const [sortOrder, setSortOrder] = useState("low-to-high");
   const location = useLocation();
   const activeOrderId = location?.state?.activeOrderId;
 
@@ -61,11 +66,23 @@ function Home() {
       toast.error("❌ Book not found.");
       return;
     }
-  
-    console.log("Active Order ID:", activeOrderId);
+
     try {
+      // Step 1: Check stock from backend
+      const stockRes = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/books/check-stock/${bookId}`
+      );
+      const stockData = await stockRes.json();
+
+      if (!stockRes.ok || !stockData.inStock) {
+        toast.error("❌ Book is out of stock.");
+        return;
+      }
+
       const res = await fetch(
-        `${import.meta.env.VITE_APP_API_URL}/api/orders/${activeOrderId}/add-book`,
+        `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/orders/${activeOrderId}/add-book`,
         {
           method: "PUT",
           headers: {
@@ -79,7 +96,7 @@ function Home() {
           }),
         }
       );
-  
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       toast.success("✅ Book added to order!");
@@ -88,8 +105,17 @@ function Home() {
       toast.error("❌ Failed to add book to order.");
     }
   };
-  
-  
+
+  const handleSort = (order) => {
+    setSortOrder(order);
+    let sortedBooks;
+    if (order === "low-to-high") {
+      sortedBooks = [...books].sort((a, b) => a.price - b.price);
+    } else if (order === "high-to-low") {
+      sortedBooks = [...books].sort((a, b) => b.price - a.price);
+    }
+    setBooks(sortedBooks);
+  };
 
   const genres = [...new Set(books.map((book) => book.genre))];
 
@@ -151,6 +177,22 @@ function Home() {
         </div>
       </div>
 
+      {/* Sort by Price */}
+      <div className="sort-by-price">
+        <label htmlFor="sort" className="sort-label">
+          Sort by Price:{" "}
+        </label>
+        <select
+          id="sort"
+          value={sortOrder}
+          onChange={(e) => handleSort(e.target.value)}
+          className="sort-dropdown"
+        >
+          <option value="low-to-high">Low to High</option>
+          <option value="high-to-low">High to Low</option>
+        </select>
+      </div>
+
       {/* Books List by Genre */}
       {genres.length === 0 ? (
         <p>No books found matching your search!</p>
@@ -173,7 +215,10 @@ function Home() {
                       View Details
                     </Link>
                     {activeOrderId && (
-                      <button className="btn" onClick={() => handleAddToOrder(book._id)}>
+                      <button
+                        className="btn"
+                        onClick={() => handleAddToOrder(book._id)}
+                      >
                         Add to Order
                       </button>
                     )}

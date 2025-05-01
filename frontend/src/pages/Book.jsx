@@ -78,9 +78,16 @@ const Book = () => {
       toast.info("Please log in to add items to cart.");
       return;
     }
+  
+    if (!book.stock || book.stock < quantity) {
+      toast.warn(`Only ${book.stock || 0} item(s) available in stock.`);
+      return;
+    }
+  
     addToCart({ ...book, quantity });
     toast.success("Book added to cart!");
   };
+  
 
   // Order Now handler (unchanged)
   const handleOrder = async () => {

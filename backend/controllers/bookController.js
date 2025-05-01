@@ -131,3 +131,24 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.checkStock = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    if (book.stock > 0) {
+      return res.status(200).json({ inStock: true, stock: book.stock });
+    } else {
+      return res.status(200).json({ inStock: false });
+    }
+  } catch (err) {
+    console.error("Error checking stock:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+

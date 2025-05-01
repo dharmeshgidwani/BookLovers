@@ -276,3 +276,45 @@
     padding: 0.5rem 1rem;
   }
 }
+/* Sort by Price Section */
+.sort-by-price {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.sort-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #34495e;
+  margin-right: 1rem;
+}
+
+.sort-by-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sort-dropdown {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 30px;
+  border: 2px solid #16a085;
+  background-color: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: auto; 
+  min-width: 150px; 
+}
+
+.sort-dropdown:focus {
+  outline: none;
+  border-color: #1abc9c;
+}
+
+.sort-dropdown:hover {
+  border-color: #1abc9c;
+  background-color: #f0f9f9;
+}

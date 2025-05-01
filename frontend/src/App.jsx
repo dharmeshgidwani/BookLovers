@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Home from "./pages/Home";
+import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -28,6 +29,7 @@ const AppRoutes = () => {
       <Navbar key={isLoggedIn ? "logged-in" : "logged-out"} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
         <Route
           path="/login"
           element={isLoggedIn ? <Navigate to="/" /> : <Login />}
