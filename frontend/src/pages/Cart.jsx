@@ -210,9 +210,7 @@ const Cart = () => {
       if (!response.ok) {
         throw new Error("Failed to update cart");
       }
-  
-      toast.success("Cart updated");
-    } catch (error) {
+      } catch (error) {
       console.error("Quantity update error:", error);
       toast.error("Failed to update quantity");
     }
