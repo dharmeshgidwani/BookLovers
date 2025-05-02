@@ -13,6 +13,7 @@ function Home() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [originalBooks, setOriginalBooks] = useState([]);
+  const [isAdding, setIsAdding] = useState(false);
   const [sortOrder, setSortOrder] = useState("low-to-high");
   const location = useLocation();
   const activeOrderId = location?.state?.activeOrderId;
@@ -228,6 +229,7 @@ function Home() {
           </section>
         ))
       )}
+      
     </div>
   );
 }

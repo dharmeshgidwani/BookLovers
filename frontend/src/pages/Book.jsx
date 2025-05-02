@@ -147,6 +147,7 @@ const Book = () => {
           <h1>{book.title}</h1>
           <p className="author">by {book.author}</p>
           <p className="price">Price: ₹{book.price}</p>
+          <p className="shipping-note"><b>Shipping </b> rates will be calculated at checkout.</p>
           <p className="author">Book Type: {book.bookType}</p>
 
           {/* Quantity Selector */}

@@ -48,7 +48,11 @@ exports.addBook = async (req, res) => {
   try {
     const { title, author, genre, price, mrp, weight, stock, bookType } = req.body;
 
-    // If there's an image, upload it to Cloudinary
+    const existingBook = await Book.findOne({ title, author });
+    if (existingBook) {
+      return res.status(400).json({ message: "Book already exists with the same title and author" });
+    }
+
     let imageUrl;
     if (req.file) {
       imageUrl = await uploadToCloudinary(req.file.path);
@@ -76,6 +80,7 @@ exports.addBook = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.updateBook = async (req, res) => {
   try {

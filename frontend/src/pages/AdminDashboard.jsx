@@ -68,7 +68,7 @@ const AdminDashboard = () => {
   const handleAddOrUpdateBook = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-
+  
     if (newBook.title) formData.append("title", newBook.title);
     if (newBook.bookType) formData.append("bookType", newBook.bookType);
     if (newBook.author) formData.append("author", newBook.author);
@@ -78,31 +78,34 @@ const AdminDashboard = () => {
     if (newBook.price !== undefined) formData.append("price", newBook.price);
     if (newBook.stock !== undefined) formData.append("stock", newBook.stock);
     if (newBook.image) formData.append("image", newBook.image);
-
-    console.log(newBook);
-
+  
     const url = editingBookId
       ? `${import.meta.env.VITE_APP_API_URL}/api/books/${editingBookId}`
       : `${import.meta.env.VITE_APP_API_URL}/api/books/add`;
-
+  
     const method = editingBookId ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      body: formData,
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert(`Book ${editingBookId ? "updated" : "added"} successfully!`);
-      fetchBooks();
-      resetForm();
-    } else {
-      console.log(data);
-      alert("Error saving book");
+  
+    try {
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        alert(`Book ${editingBookId ? "updated" : "added"} successfully!`);
+        fetchBooks();
+        resetForm();
+      } else {
+        alert(data.message || "Error saving book");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
+  
 
   const handleDelete = async (bookId) => {
     const res = await fetch(
