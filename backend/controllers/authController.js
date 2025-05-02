@@ -6,11 +6,18 @@ exports.signup = async (req, res) => {
   try {
     const { name, email, phone, password, address } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ phone });
     if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User with this phone number already exists" });
+
+    if (email) {
+      const existingEmailUser = await User.findOne({ email });
+      if (existingEmailUser)
+        return res.status(400).json({ message: "User with this email already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
       name,
       email,
@@ -27,6 +34,7 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {

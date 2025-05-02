@@ -99,6 +99,11 @@ const addBookToOrder = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
+    // Check if there is enough stock
+    if (book.stock < quantity) {
+      return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+    }
+
     const existingBookIndex = order.books.findIndex(b => b.bookId.toString() === bookId);
 
     if (existingBookIndex >= 0) {
@@ -111,6 +116,10 @@ const addBookToOrder = async (req, res) => {
         quantity,
       });
     }
+
+    // Decrease stock after adding the book to the order
+    book.stock -= quantity;
+    await book.save();
 
     // Recalculate totalPrice
     let newTotal = 0;
@@ -134,49 +143,82 @@ const addBookToOrder = async (req, res) => {
   }
 };
 
+
 const updateOrderDetails = async (req, res) => {
-  const { orderId } = req.params; // Extract the orderId from URL parameters
-  const { updatedBooks, amountPaid } = req.body; // Extract updatedBooks and amountPaid from the request body
+  const { orderId } = req.params;
+  const { updatedBooks, originalBooks } = req.body;
 
   try {
-    // Find the order by its ID
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
-    // Validate each book in the updatedBooks array
+    const originalMap = {};
+    for (const item of originalBooks) {
+      originalMap[item.bookId] = item.quantity;
+    }
+
+    const updatedMap = {};
     for (const item of updatedBooks) {
-      const book = await Book.findById(item.bookId);
-      if (!book) return res.status(404).json({ message: `Book not found: ${item.bookId}` });
+      updatedMap[item.bookId] = item.quantity;
+    }
 
-      // Check if the quantity is available in stock
-      if (item.quantity > book.stock) {
-        return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+    // Get all books in a single fetch to avoid multiple queries
+    const books = await Book.find({ _id: { $in: Object.keys(updatedMap) } });
+
+    // Create a map of books by ID for easier access
+    const booksMap = books.reduce((acc, book) => {
+      acc[book._id.toString()] = book;
+      return acc;
+    }, {});
+
+    // ✅ Handle removed books
+    for (const bookId in originalMap) {
+      if (!updatedMap[bookId]) {
+        const book = booksMap[bookId];
+        if (book) {
+          book.stock += originalMap[bookId]; // restore full quantity
+          await book.save();
+        }
       }
     }
 
-    // Update the order's books with the new data
+    // ✅ Validate and apply changes for remaining books
+    for (const item of updatedBooks) {
+      const book = booksMap[item.bookId];
+      if (!book) {
+        return res.status(404).json({ message: `Book not found: ${item.bookId}` });
+      }
+
+      const prevQty = originalMap[item.bookId] || 0;
+      const qtyChange = item.quantity - prevQty;
+
+      if (qtyChange > 0 && book.stock < qtyChange) {
+        return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+      }
+
+      book.stock -= qtyChange;
+      await book.save();
+    }
+
+    // ✅ Update the order itself
     order.books = updatedBooks;
 
-    // Calculate the new total price
     let newTotal = 0;
     for (const item of updatedBooks) {
-      const book = await Book.findById(item.bookId);
+      const book = booksMap[item.bookId];
       newTotal += book.price * item.quantity;
     }
+
     order.totalPrice = newTotal;
+    order.amountPending = newTotal - order.amountPaid;
 
-    // Update the amount paid, or use the existing value if not provided
-    const paid = typeof amountPaid === "number" ? amountPaid : order.amountPaid;
-    order.amountPaid = paid;
-    order.amountPending = newTotal - paid; // Calculate the remaining balance
-
-    // Add a status history for the update
     order.statusHistory.push({
       status: "Order Updated",
       changedAt: new Date(),
     });
 
-    // Save the updated order
     const updatedOrder = await order.save();
     res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
 

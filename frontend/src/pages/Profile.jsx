@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import "../css/Profile.css";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const { auth } = useContext(AuthContext);
@@ -19,6 +20,8 @@ const Profile = () => {
   const [editableOrder, setEditableOrder] = useState(null);
   const [newBookId, setNewBookId] = useState("");
   const [newBookQty, setNewBookQty] = useState(1);
+  const [originalOrderBooks, setOriginalOrderBooks] = useState(null);
+
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -79,16 +82,18 @@ const Profile = () => {
 
   const handleEditOrder = (order) => {
     setEditOrderId(order._id);
-    // Clone the books array to editableOrder state
-    setEditableOrder(
-      order.books.map((book) => ({
-        bookId: typeof book.bookId === "object" ? book.bookId._id : book.bookId,
-        title: book.title,
-        price: book.price,
-        quantity: book.quantity,
-      }))
-    );
+  
+    const formattedBooks = order.books.map((book) => ({
+      bookId: typeof book.bookId === "object" ? book.bookId._id : book.bookId,
+      title: book.title,
+      price: book.price,
+      quantity: book.quantity,
+    }));
+  
+    setEditableOrder(formattedBooks);
+    setOriginalOrderBooks(formattedBooks); 
   };
+  
 
   const handleQuantityChange = (index, newQty) => {
     const updatedBooks = [...editableOrder];
@@ -104,36 +109,48 @@ const Profile = () => {
 
   const handleSaveOrder = async (orderId) => {
     try {
-      // Sending a PUT request to update the order details on the backend
       const res = await fetch(
-        `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}/update`, // Note the updated URL
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}/update`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updatedBooks: editableOrder }), // Sending updatedBooks as the body
+          body: JSON.stringify({
+            updatedBooks: editableOrder,
+            originalBooks: originalOrderBooks, // 👈 Send original snapshot
+          }),
         }
       );
   
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to update order");
+      if (!res.ok) {
+        if (data.message.includes("insufficient stock")) {
+          throw new Error("Insufficient stock for some items in the order");
+        }
+        throw new Error(data.message || "Failed to update order");
+      }
   
-      // If successful, show an alert and reset the edit state
-      alert("Order updated!");
+      toast.success("Order updated!");
       setEditOrderId(null);
       setEditableOrder(null);
+      setOriginalOrderBooks(null); // 👈 clear original snapshot
   
-      // Refetch the updated list of orders for the user
       const refreshed = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/orders/user/${user.id}`
       );
       const updatedData = await refreshed.json();
       setOrders(updatedData || []);
     } catch (err) {
-      // Handle any errors during the update process
       console.error("Error updating order:", err);
-      alert("Failed to update order.");
+      if (err.message === "Insufficient stock for some items in the order") {
+        toast.error("Some items in your order are out of stock.");
+      } else {
+        toast.error("Failed to update order.");
+      }
     }
   };
+  
+  
+  
   
 
   return (

@@ -76,7 +76,6 @@ function Signup() {
           <input
             type="email"
             placeholder="Email (Optional)"
-            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="input-field"
