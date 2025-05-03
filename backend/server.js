@@ -10,26 +10,31 @@ const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-const allowedOrigins = [
-  "http://localhost:5174",
-  "https://book-lovers.vercel.app",
-  "https://www.booklovers.co.in",
-  "https://booklovers.co.in"
-];
+// const allowedOrigins = [
+//   "http://localhost:5174",
+//   "https://book-lovers.vercel.app",
+//   "https://www.booklovers.co.in",
+//   "https://booklovers.co.in"
+// ];
 
 
 dotenv.config();
 const app = express();
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// }));
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
+  origin: '*', 
+  credentials: true, 
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -39,6 +44,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/orders", orderRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/users", userRoutes);
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is running!");
+});
 
 app.get("/", (req, res) => {
   res.send("Bookstore API Running...");
