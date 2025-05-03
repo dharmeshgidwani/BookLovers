@@ -13,7 +13,8 @@ const userRoutes = require("./routes/userRoutes");
 const allowedOrigins = [
   "http://localhost:5174",
   "https://book-lovers.vercel.app",
-  "https://www.booklovers.co.in "
+  "https://www.booklovers.co.in",
+  "https://booklovers.co.in"
 ];
 
 
