@@ -219,8 +219,9 @@ function Home() {
                       <button
                         className="btn"
                         onClick={() => handleAddToOrder(book._id)}
+                        disabled={isAdding}
                       >
-                        Add to Order
+                        {isAdding ? "Adding..." : "Add to Order"}
                       </button>
                     )}
                   </div>
@@ -229,7 +230,6 @@ function Home() {
           </section>
         ))
       )}
-      
     </div>
   );
 }

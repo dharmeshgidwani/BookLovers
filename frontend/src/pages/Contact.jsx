@@ -5,20 +5,20 @@ const Contact = () => {
   const [ripples, setRipples] = useState([]);
 
   // Function to create the water ripple effect
-  const handleMouseMove = (event) => {
-    const ripple = {
-      x: event.clientX,
-      y: event.clientY,
-      id: Date.now(),
-    };
-    setRipples((prevRipples) => [...prevRipples, ripple]);
-    setTimeout(() => {
-      setRipples((prevRipples) => prevRipples.filter((r) => r.id !== ripple.id));
-    }, 1000);
-  };
+  // const handleMouseMove = (event) => {
+  //   const ripple = {
+  //     x: event.clientX,
+  //     y: event.clientY,
+  //     id: Date.now(),
+  //   };
+  //   setRipples((prevRipples) => [...prevRipples, ripple]);
+  //   setTimeout(() => {
+  //     setRipples((prevRipples) => prevRipples.filter((r) => r.id !== ripple.id));
+  //   }, 1000);
+  // };
 
   return (
-    <div className="contact-page" onMouseMove={handleMouseMove}>
+    <div className="contact-page" >
       {ripples.map((ripple) => (
         <div
           key={ripple.id}

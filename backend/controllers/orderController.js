@@ -144,6 +144,94 @@ const addBookToOrder = async (req, res) => {
 };
 
 
+// const updateOrderDetails = async (req, res) => {
+//   const { orderId } = req.params;
+//   const { updatedBooks, originalBooks } = req.body;
+
+//   try {
+//     const order = await Order.findById(orderId);
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+
+//     const originalMap = {};
+//     for (const item of originalBooks) {
+//       originalMap[item.bookId] = item.quantity;
+//     }
+
+//     const updatedMap = {};
+//     for (const item of updatedBooks) {
+//       updatedMap[item.bookId] = item.quantity;
+//     }
+
+//     // Get all book IDs involved (both in originalBooks and updatedBooks)
+//     const allBookIds = Array.from(new Set([
+//       ...Object.keys(originalMap),
+//       ...Object.keys(updatedMap)
+//     ]));
+//     const books = await Book.find({ _id: { $in: allBookIds } });
+
+//     // Create a map of books by ID for easier access
+//     const booksMap = books.reduce((acc, book) => {
+//       acc[book._id.toString()] = book;
+//       return acc;
+//     }, {});
+
+//     // ✅ Handle removed books (restore stock)
+//     for (const bookId in originalMap) {
+//       if (!updatedMap[bookId]) {
+//         const book = booksMap[bookId];
+//         if (book) {
+//           book.stock += originalMap[bookId]; // restore full quantity
+//           await book.save();
+//         }
+//       }
+//     }
+
+//     // ✅ Validate and apply changes for remaining books (increase/decrease stock)
+//     for (const item of updatedBooks) {
+//       const book = booksMap[item.bookId];
+//       if (!book) {
+//         return res.status(404).json({ message: `Book not found: ${item.bookId}` });
+//       }
+
+//       const prevQty = originalMap[item.bookId] || 0;
+//       const qtyChange = item.quantity - prevQty;
+
+//       if (qtyChange > 0 && book.stock < qtyChange) {
+//         return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+//       }
+
+//       book.stock -= qtyChange;  // Update stock
+//       await book.save();
+//     }
+
+//     // ✅ Update the order itself
+//     order.books = updatedBooks;
+
+//     let newTotal = 0;
+//     for (const item of updatedBooks) {
+//       const book = booksMap[item.bookId];
+//       newTotal += book.price * item.quantity;
+//     }
+
+//     order.totalPrice = newTotal;
+//     order.amountPending = newTotal - order.amountPaid;
+
+//     order.statusHistory.push({
+//       status: "Order Updated",
+//       changedAt: new Date(),
+//     });
+
+//     const updatedOrder = await order.save();
+//     res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
+
+//   } catch (error) {
+//     console.error("Error updating order:", error);
+//     res.status(500).json({ message: "Error updating order", error: error.message });
+//   }
+// };
+
 const updateOrderDetails = async (req, res) => {
   const { orderId } = req.params;
   const { updatedBooks, originalBooks } = req.body;
@@ -164,8 +252,12 @@ const updateOrderDetails = async (req, res) => {
       updatedMap[item.bookId] = item.quantity;
     }
 
-    // Get all books in a single fetch to avoid multiple queries
-    const books = await Book.find({ _id: { $in: Object.keys(updatedMap) } });
+    // Get all book IDs involved (both in originalBooks and updatedBooks)
+    const allBookIds = Array.from(new Set([
+      ...Object.keys(originalMap),
+      ...Object.keys(updatedMap)
+    ]));
+    const books = await Book.find({ _id: { $in: allBookIds } });
 
     // Create a map of books by ID for easier access
     const booksMap = books.reduce((acc, book) => {
@@ -173,18 +265,19 @@ const updateOrderDetails = async (req, res) => {
       return acc;
     }, {});
 
-    // ✅ Handle removed books
+    // ✅ Handle removed books (restore stock)
     for (const bookId in originalMap) {
       if (!updatedMap[bookId]) {
         const book = booksMap[bookId];
         if (book) {
-          book.stock += originalMap[bookId]; // restore full quantity
-          await book.save();
+          // Restore stock for removed books
+          book.stock += originalMap[bookId];
+          await book.save();  // Save updated stock in the Book schema
         }
       }
     }
 
-    // ✅ Validate and apply changes for remaining books
+    // ✅ Validate and apply changes for remaining books (increase/decrease stock)
     for (const item of updatedBooks) {
       const book = booksMap[item.bookId];
       if (!book) {
@@ -194,12 +287,20 @@ const updateOrderDetails = async (req, res) => {
       const prevQty = originalMap[item.bookId] || 0;
       const qtyChange = item.quantity - prevQty;
 
-      if (qtyChange > 0 && book.stock < qtyChange) {
-        return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+      // If the quantity increases, check stock availability
+      if (qtyChange > 0) {
+        if (book.stock < qtyChange) {
+          return res.status(400).json({ message: `Not enough stock for ${book.title}` });
+        }
+        book.stock -= qtyChange; // Reduce stock for added quantity
       }
 
-      book.stock -= qtyChange;
-      await book.save();
+      // If the quantity decreases, restore stock
+      if (qtyChange < 0) {
+        book.stock += -qtyChange; // Increase stock for removed quantity
+      }
+
+      await book.save(); // Save updated stock for the book in the Book schema
     }
 
     // ✅ Update the order itself
@@ -207,8 +308,9 @@ const updateOrderDetails = async (req, res) => {
 
     let newTotal = 0;
     for (const item of updatedBooks) {
-      const book = booksMap[item.bookId];
-      newTotal += book.price * item.quantity;
+      const bookInfo = await Book.findById(item.bookId);
+      if (!bookInfo) continue;
+      newTotal += bookInfo.price * item.quantity;
     }
 
     order.totalPrice = newTotal;
@@ -227,6 +329,7 @@ const updateOrderDetails = async (req, res) => {
     res.status(500).json({ message: "Error updating order", error: error.message });
   }
 };
+
 
 const updateAmountPaid = async (req, res) => {
   try {
