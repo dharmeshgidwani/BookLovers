@@ -166,7 +166,7 @@ function Home() {
         </div>
       </div>
 
-      <div className="company-info">
+      {/* <div className="company-info">
         <div className="info-card">
           <FaBookOpen />
           <h3>Wide Selection</h3>
@@ -182,7 +182,7 @@ function Home() {
           <h3>Customer Support</h3>
           <p>We're here to help you 24/7 with any inquiries.</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Search Bar */}
       <div className="search-bar">
