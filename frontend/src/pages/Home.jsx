@@ -163,6 +163,7 @@ function Home() {
               className="instagram-icon"
             />
           </a>
+          <a href="https://wa.me/7022632653" target="_blank" rel="noopener noreferrer" className="contact-button whatsapp">Chat on WhatsApp</a>
         </div>
       </div>
 
