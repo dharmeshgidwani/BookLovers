@@ -145,7 +145,7 @@ const Book = () => {
         <img src={book.imageUrl} alt={book.title} className="book-cover" />
         <div className="book-details">
           <h1>{book.title}</h1>
-          <p className="author">by {book.author}</p>
+          {book.author ? (<p className="author">by {book.author}</p>) : null}
           <p className="price">Price: ₹{book.price}</p>
           <p className="shipping-note">
             <b>Shipping </b> rates will be calculated at checkout.
