@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
-import { useCart } from "../context/CartContext"; 
+import { useCart } from "../context/CartContext";
 import "react-toastify/dist/ReactToastify.css";
 import "../css/Book.css";
 
@@ -14,13 +14,15 @@ const Book = () => {
   const [quantity, setQuantity] = useState(1);
 
   const { auth } = useContext(AuthContext);
-  const { addToCart } = useCart(); 
+  const { addToCart } = useCart();
   const user = auth.user;
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books/${id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_APP_API_URL}/api/books/${id}`
+        );
         const data = await res.json();
         setBook(data);
       } catch (err) {
@@ -78,16 +80,15 @@ const Book = () => {
       toast.info("Please log in to add items to cart.");
       return;
     }
-  
+
     if (!book.stock || book.stock < quantity) {
       toast.warn(`Only ${book.stock || 0} item(s) available in stock.`);
       return;
     }
-  
+
     addToCart({ ...book, quantity });
     toast.success("Book added to cart!");
   };
-  
 
   // Order Now handler (unchanged)
   const handleOrder = async () => {
@@ -104,13 +105,16 @@ const Book = () => {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/orders/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderDetails),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_API_URL}/api/orders/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderDetails),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Failed to create order");
@@ -138,18 +142,17 @@ const Book = () => {
       <ToastContainer position="top-right" />
 
       <div className="book-container">
-        <img
-          src={book.imageUrl}
-          alt={book.title}
-          className="book-cover"
-        />
+        <img src={book.imageUrl} alt={book.title} className="book-cover" />
         <div className="book-details">
           <h1>{book.title}</h1>
           <p className="author">by {book.author}</p>
           <p className="price">Price: ₹{book.price}</p>
-          <p className="shipping-note"><b>Shipping </b> rates will be calculated at checkout.</p>
-          <p className="author">Book Type: {book.bookType}</p>
-
+          <p className="shipping-note">
+            <b>Shipping </b> rates will be calculated at checkout.
+          </p>
+          {book.bookType ? (
+            <p className="author">Book Type: {book.bookType}</p>
+          ) : null}
           {/* Quantity Selector */}
           <div className="quantity-selector">
             <label htmlFor="quantity">Quantity: </label>
@@ -166,7 +169,7 @@ const Book = () => {
             </select>
           </div>
 
-          {description ? (<p className="description">{description}</p>) : ""}
+          {description ? <p className="description">{description}</p> : ""}
 
           <div className="book-buttons">
             <button className="add-to-cart-btn" onClick={handleAddToCart}>
