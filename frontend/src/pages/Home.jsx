@@ -240,7 +240,7 @@ function Home() {
                   <div key={book._id} className="book-item">
                     <img src={book.imageUrl} alt={book.title} />
                     <h3>{book.title}</h3>
-                    {book.author ? (<p>Author: {book.author}</p>) : null}
+                    {/* {book.author ? (<p>Author: {book.author}</p>) : null} */}
                     {/* <p>MRP: ₹{book.mrp}</p> */}
                     <p>Price: <strong>₹{book.price}</strong></p>
                     {/* <p>Type: {book.bookType}</p> */}
