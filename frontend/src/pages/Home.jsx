@@ -149,7 +149,7 @@ function Home() {
             {/* <span className="tooltip">Join WhatsApp Group</span> */}
           </a>
           <a
-            href="https://www.instagram.com/yourinstagramhandle"
+            href="https://www.instagram.com/book_lovers_india?igsh=ZmhlZGo2M3ltanIx"
             className="instagram-float"
             target="_blank"
             rel="noopener noreferrer"
