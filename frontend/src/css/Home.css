@@ -128,6 +128,7 @@ body, html {
   padding: 0 10px;
   box-sizing: border-box;
   width: 100%;
+  overflow: hidden
 }
 
 .book-item {
@@ -171,7 +172,7 @@ body, html {
   color: #95a5a6;
 }
 
-.btn {
+.btn {  
   display: inline-block;
   margin-top: 1.2rem;
   padding: 0.8rem 1.6rem;
@@ -261,7 +262,7 @@ body, html {
   }
 
   .books-list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
   }
 
@@ -322,8 +323,7 @@ body, html {
     gap: 15px; /* Reduce gap slightly on small screens */
   }
   .book-item {
-    width: 100%;
-    box-sizing: border-box;
+    width: 100%;  /* Ensure full width is used */
     padding: 0.8rem;
     margin: 0;
   }
@@ -367,7 +367,7 @@ body, html {
 
   .books-list {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
 }
@@ -479,4 +479,44 @@ body, html {
 .instagram-float {
   background-size: 400% 400%;
   animation: gradientShift 10s ease-in-out infinite;
+}
+@media (max-width: 375px) {
+  .books-list {
+    grid-template-columns: 1fr; /* Stack books vertically on very small screens */
+    gap: 1rem;  /* Adjust gap for smaller screens */
+  }
+
+  .book-item {
+    width: 100%;
+    padding: 0.6rem;  /* Reduce padding for more compact layout */
+  }
+
+  .branding h1 {
+    font-size: 1.8rem;  /* Smaller font size for h1 */
+  }
+
+  .branding p,
+  .tagline {
+    font-size: 0.9rem;  /* Reduce font size for smaller screens */
+  }
+}
+@media (max-width: 360px) {
+  .books-list {
+    grid-template-columns: 1fr;  /* Stack items for 360px screens */
+    gap: 0.6rem;  /* Tighten the gap between items */
+  }
+
+  .book-item {
+    width: 100%;
+    padding: 0.5rem;  /* Further reduce padding */
+  }
+
+  .branding h1 {
+    font-size: 1.6rem;  /* Adjust h1 font size for smaller screens */
+  }
+
+  .branding p,
+  .tagline {
+    font-size: 0.8rem;  /* Further reduce font size */
+  }
 }
