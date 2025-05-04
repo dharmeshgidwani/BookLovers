@@ -21,7 +21,7 @@ function Signup() {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, password, address }),
+        body: JSON.stringify({ name, email, phone, password }),
       });
 
       const data = await res.json();
@@ -96,14 +96,14 @@ function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             className="input-field"
           />
-          <input
+          {/* <input
             type="text"
             placeholder="Address"
             required
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className="input-field"
-          />
+          /> */}
           <button type="submit" className="signup-button">Signup</button>
         </form>
         <p className="link-text">
