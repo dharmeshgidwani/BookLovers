@@ -413,7 +413,7 @@ const AdminDashboard = () => {
                       <strong>Customer:</strong> {order.userId?.name}
                     </p>
                     <p>
-                      <strong>Email:</strong> {order.userId?.email}
+                      <strong>Phone:</strong> {order.userId?.phone}
                     </p>
                     <p>
                       <strong>Status:</strong> {order.status}
@@ -516,7 +516,7 @@ const AdminDashboard = () => {
                       <strong>Customer:</strong> {order.userId.name}
                     </p>
                     <p>
-                      <strong>Email:</strong> {order.userId.email}
+                      <strong>Phone:</strong> {order.userId.phone}
                     </p>
                     <p>
                       <strong>Address:</strong> {order.userId.address}
