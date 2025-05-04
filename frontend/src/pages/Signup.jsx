@@ -6,7 +6,7 @@ import "../css/Signup.css";
 
 function Signup() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
@@ -33,7 +33,7 @@ function Signup() {
           isLoading: false,
           autoClose: 3000,
         });
-        setTimeout(() => navigate("/login"), 3000); 
+        setTimeout(() => navigate("/login"), 1500); 
       } else {
         toast.update(loadingToast, {
           render: data.message || "Signup failed",
