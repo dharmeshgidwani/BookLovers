@@ -120,6 +120,8 @@ function Home() {
 
   const genres = [...new Set(books.map((book) => book.genre))];
 
+
+
   return (
     <div className="home-page">
       {/* Toast Notifications */}
@@ -238,10 +240,10 @@ function Home() {
                   <div key={book._id} className="book-item">
                     <img src={book.imageUrl} alt={book.title} />
                     <h3>{book.title}</h3>
-                    <p>Author: {book.author}</p>
-                    <p>MRP: ₹{book.mrp}</p>
-                    <p>Price: ₹{book.price}</p>
-                    <p>Type: {book.bookType}</p>
+                    {book.author ? (<p>Author: {book.author}</p>) : null}
+                    {/* <p>MRP: ₹{book.mrp}</p> */}
+                    <p>Price: <strong>₹{book.price}</strong></p>
+                    {/* <p>Type: {book.bookType}</p> */}
                     <Link to={`/book/${book._id}`} className="btn">
                       View Details
                     </Link>
