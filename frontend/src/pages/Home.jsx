@@ -132,6 +132,36 @@ function Home() {
         <div className="tagline">
           <p>"Explore, Discover, and Fall in Love with Books." 📖✨</p>
         </div>
+        {/* WhatsApp Floating Button */}
+        <div className="button-container">
+          <a
+            href="https://chat.whatsapp.com/GKfckWJdeoH6fnxaGtbF4s"
+            className="whatsapp-float"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Join WhatsApp Group"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/220/220236.png"
+              alt="Join WhatsApp Group"
+              className="whatsapp-icon"
+            />
+            {/* <span className="tooltip">Join WhatsApp Group</span> */}
+          </a>
+          <a
+            href="https://www.instagram.com/yourinstagramhandle"
+            className="instagram-float"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Follow Us on Instagram"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/174/174855.png"
+              alt="Follow Us on Instagram"
+              className="instagram-icon"
+            />
+          </a>
+        </div>
       </div>
 
       <div className="company-info">

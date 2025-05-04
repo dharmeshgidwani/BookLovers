@@ -35,6 +35,13 @@ body, html {
   margin-bottom: 4rem;
   transition: box-shadow 0.3s ease;
 }
+.button-container {
+  display: flex;
+  justify-content: center; /* Align buttons horizontally */
+  gap: 20px; /* Space between the buttons */
+  margin-top: 20px; /* Some space between text and buttons */
+  position: relative; /* Keeps buttons within the container */
+}
 
 .branding:hover {
   box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
@@ -120,6 +127,7 @@ body, html {
   gap: 1rem;
   padding: 0 10px;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .book-item {
@@ -235,15 +243,16 @@ body, html {
   }
 
   .search-input-wrapper {
-    width: 90%;
-    max-width: 350px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+    padding: 0 10px;
   }
 
   .company-info {
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    padding: 0 10px;
   }
 
   .info-card {
@@ -252,7 +261,7 @@ body, html {
   }
 
   .books-list {
-    grid-template-columns: repeat(2, 1fr); /* Force 2 per row */
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
@@ -261,7 +270,9 @@ body, html {
   }
 
   .book-item img {
-    height: 180px;
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
   }
 
   .book-item h3 {
@@ -272,9 +283,50 @@ body, html {
     font-size: 1rem;
     padding: 0.6rem 1.2rem;
   }
+  .whatsapp-float,
+  .instagram-float {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Reduce icon size for smaller screens */
+  .whatsapp-icon,
+  .instagram-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Ensure the buttons don't stack on smaller screens */
+  .button-container {
+    gap: 20px; /* Ensure there's space between the buttons */
+  }
 }
 
+
 @media (max-width: 480px) {
+
+  .whatsapp-float,
+  .instagram-float {
+    width: 45px;
+    height: 45px;
+  }
+
+  .whatsapp-icon,
+  .instagram-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  /* Adjust spacing between buttons */
+  .button-container {
+    gap: 15px; /* Reduce gap slightly on small screens */
+  }
+  .book-item {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem;
+    margin: 0;
+  }
   .branding h1 {
     font-size: 2rem;
   }
@@ -298,9 +350,9 @@ body, html {
   }
 
   .search-input-wrapper {
-    width: 90%;
-    max-width: 320px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 300px;
+    padding: 0 10px;
   }
 
   .company-info {
@@ -314,18 +366,12 @@ body, html {
   }
 
   .books-list {
-    grid-template-columns: repeat(2, 1fr); /* Keep 2 per row on mobile too */
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
-  .book-item {
-    padding: 1rem;
-  }
-
-  .book-item img {
-    height: 160px;
-  }
 }
+
 
 
 .sort-by-price {
@@ -387,4 +433,50 @@ body, html {
 ::-webkit-scrollbar-thumb {
   background: #16a085;
   border-radius: 10px;
+}
+.whatsapp-float,
+.instagram-float {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #16a085, #1abc9c);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover Effects for Floating Buttons */
+.whatsapp-float:hover,
+.instagram-float:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Icons inside the floating buttons */
+.whatsapp-icon,
+.instagram-icon {
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.whatsapp-float:hover .whatsapp-icon,
+.instagram-float:hover .instagram-icon {
+  transform: scale(1.2); /* Slight zoom effect on hover */
+}
+
+/* Add a subtle gradient animation to the buttons */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.whatsapp-float,
+.instagram-float {
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease-in-out infinite;
 }

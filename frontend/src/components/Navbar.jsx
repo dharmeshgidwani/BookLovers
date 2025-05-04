@@ -50,22 +50,6 @@ function Navbar() {
             <Link to="/login" onClick={() => setMenuOpen(false)}>Login</Link>
           )}
         </div>
-
-        {/* WhatsApp Floating Button */}
-        <a
-          href="https://chat.whatsapp.com/GKfckWJdeoH6fnxaGtbF4s"
-          className="whatsapp-float"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Join WhatsApp Group"
-        >
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/220/220236.png"
-            alt="Join WhatsApp Group"
-            className="whatsapp-icon"
-          />
-          {/* <span className="tooltip">Join WhatsApp Group</span> */}
-        </a>
       </div>
     </nav>
   );
