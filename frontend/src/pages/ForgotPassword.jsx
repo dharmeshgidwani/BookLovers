@@ -9,15 +9,15 @@ function ForgotPassword() {
   const [name, setName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userFound, setUserFound] = useState(false);
-  const [enteredName, setEnteredName] = useState(""); // For entered name
-  const [nameMatch, setNameMatch] = useState(false); // To check if entered name matches
-  const [loading, setLoading] = useState(false); // To track loading state for buttons
+  const [enteredName, setEnteredName] = useState(""); 
+  const [nameMatch, setNameMatch] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
   const navigate = useNavigate();
 
   const handlePhoneSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when request starts
+    setLoading(true); 
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/check-user`, {
         method: "POST",
@@ -36,7 +36,7 @@ function ForgotPassword() {
       console.error(err);
       toast.error("Something went wrong");
     } finally {
-      setLoading(false); // Set loading to false after request completes
+      setLoading(false); 
     }
   };
 
@@ -52,7 +52,7 @@ function ForgotPassword() {
 
   const handleResetSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when request starts
+    setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/reset-password`, {
         method: "POST",
@@ -70,7 +70,7 @@ function ForgotPassword() {
       console.error(err);
       toast.error("Something went wrong");
     } finally {
-      setLoading(false); // Set loading to false after request completes
+      setLoading(false); 
     }
   };
 
@@ -94,7 +94,8 @@ function ForgotPassword() {
         </form>
       ) : !nameMatch ? (
         <form className="forgot-form" onSubmit={handleNameSubmit}>
-          <p>Hello, we found a user with your phone number. Please enter your name to verify.</p>
+          <p>Hello, we found a user with your phone number </p> 
+          <p>Please enter your <strong>NAME</strong> to verify.</p>
           <input
             className="input-field"
             type="text"

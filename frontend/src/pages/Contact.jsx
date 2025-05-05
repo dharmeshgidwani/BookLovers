@@ -50,6 +50,19 @@ const Contact = () => {
         <div className="contact-buttons">
           {/* <a href="tel:+1234567890" className="contact-button">Call Us</a> */}
           <a href="https://wa.me/7022632653" target="_blank" rel="noopener noreferrer" className="contact-button whatsapp">Chat on WhatsApp</a>
+          <a
+            href="https://www.instagram.com/book_lovers_india?igsh=ZmhlZGo2M3ltanIx"
+            className="instagram-float"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Follow Us on Instagram"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/174/174855.png"
+              alt="Follow Us on Instagram"
+              className="instagram-icon"
+            />
+          </a>
         </div>
       </div>
     </div>

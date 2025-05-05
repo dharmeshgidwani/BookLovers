@@ -539,3 +539,55 @@ body, html {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 120%; 
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+.contact-button {
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  color: #fff;
+  background-color: #16a085;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  top: 20px
+}
+
+.contact-button:hover {
+  background-color: #1abc9c;
+}
+
+.contact-button.whatsapp {
+  background-color: #25d366;
+}
+
+.contact-button.whatsapp:hover {
+  background-color: #128c7e;
+}
