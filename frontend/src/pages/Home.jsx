@@ -126,7 +126,7 @@ function Home() {
   return (
     <div className="home-page">
       {/* Toast Notifications */}
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-center" />
 
       {/* Branding Section */}
       <div className="branding">

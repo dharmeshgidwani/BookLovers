@@ -69,7 +69,7 @@ function Login() {
 
   return (
     <div className="login-page">
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-center" />
 
       <div className="branding-main">
         <h1 className="brand-title">📚 Book Lovers</h1>

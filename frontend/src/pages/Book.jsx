@@ -139,7 +139,7 @@ const Book = () => {
   return (
     <div className="book-page">
       {/* Toast Notifications */}
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-center" />
 
       <div className="book-container">
         <img src={book.imageUrl} alt={book.title} className="book-cover" />

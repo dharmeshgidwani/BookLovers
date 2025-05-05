@@ -55,7 +55,7 @@ function Signup() {
 
   return (
     <div className="signup-page">
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-center" />
       
       <div className="branding-top">
         <h1 className="brand-title">📚 Book Lovers</h1>

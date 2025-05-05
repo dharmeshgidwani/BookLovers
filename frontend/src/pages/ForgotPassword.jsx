@@ -76,7 +76,7 @@ function ForgotPassword() {
 
   return (
     <div className="forgot-password-page">
-      <ToastContainer />
+      <ToastContainer position="top-center" />
       <h2>Reset Password</h2>
       {!userFound ? (
         <form className="forgot-form" onSubmit={handlePhoneSubmit}>

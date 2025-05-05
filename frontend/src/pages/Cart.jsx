@@ -12,6 +12,7 @@ const Cart = () => {
   const user = auth?.user || JSON.parse(localStorage.getItem("user"));
 
   const [isOrderPlaced, setisOrderPlaced] = useState(false);
+  const [loading, setloading] = useState(true)
 
   const totalAmount = cartItems?.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -20,6 +21,7 @@ const Cart = () => {
 
   const fetchBookDetails = async (bookId) => {
     if (!bookId) return {};
+    setloading(true)
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_URL}/api/books/${bookId}`
@@ -30,7 +32,9 @@ const Cart = () => {
       return bookData;
     } catch (error) {
       console.error("Error fetching book details:", error);
-      return {}; // Return an empty object on error to prevent breaking the cart
+      return {}; 
+    } finally{
+      setloading(false)
     }
   };
 
@@ -217,12 +221,10 @@ const Cart = () => {
   };
   
 
-  // Render cart
-  if (!cartInitialized) return <div>Loading...</div>;
 
   return (
     <div className="cart">
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={3000} />
 
       {isOrderPlaced && (
         <div className="order-success-message">
@@ -239,6 +241,12 @@ const Cart = () => {
           <h3>Your cart is feeling lonely!</h3>
           <p>Looks like you haven't added anything yet.</p>
           <button onClick={() => navigate("/")}>Go to Shop</button>
+
+      {loading && (
+        <div className="loader-container">
+          <div className="spinner"></div>
+        </div>
+      )}
         </div>
       ) : (
         <>

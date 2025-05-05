@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 import "../css/Navbar.css";
 
 function Navbar() {
@@ -51,13 +52,33 @@ function Navbar() {
             Contact
           </Link>
           <Link
-            to="/cart"
+            to={auth.user ? "/cart" : "#"}
             className="cart-icon-link"
-            onClick={() => setMenuOpen(false)}
+            onClick={(e) => {
+              if (!auth.user) {
+                e.preventDefault(); // prevent navigation
+                toast.info("Please log in first!", {
+                  position: "top-center",
+                  autoClose: 2000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  draggable: true,
+                  progress: undefined,
+                });
+
+                setTimeout(() => {
+                  navigate("/login");
+                }, 2000); // Redirect after 2 seconds
+              } else {
+                setMenuOpen(false);
+              }
+            }}
           >
             🛒
             {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
           </Link>
+
           {auth.user ? (
             <>
               <Link to="/profile" onClick={() => setMenuOpen(false)}>
