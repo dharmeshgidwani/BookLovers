@@ -69,3 +69,28 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Check if user exists by phone
+exports.checkUser = async (req, res) => {
+  const { phone } = req.body;
+  const user = await User.findOne({ phone });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.status(200).json({ name: user.name });
+};
+
+// Reset password
+exports.resetPassword = async (req, res) => {
+  const { phone, newPassword } = req.body;
+  const user = await User.findOne({ phone });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+
+  res.status(200).json({ message: "Password updated successfully" });
+};
+

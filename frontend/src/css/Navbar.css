@@ -18,11 +18,11 @@
   font-weight: bold;
 }
 
-/* Container for links and WhatsApp button */
+/* Container for right-side links and buttons */
 .navbar-links-container {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align links and button to the right */
+  justify-content: flex-end;
   position: relative;
 }
 
@@ -57,6 +57,47 @@
   background-color: #c82333;
 }
 
+/* Cart icon link */
+.cart-icon-link {
+  position: relative;
+  color: white;
+  text-decoration: none;
+  font-size: 2rem; /* Increase font size */
+  margin-left: 2rem;
+  background: white;
+  border-radius: 50%;
+  border: 1px solid red;
+  padding: 0.5rem; /* Add padding around the icon */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3rem; /* Increase width */
+  height: 3rem; /* Increase height */
+  text-align: center;
+}
+
+.cart-count {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 1.5rem; /* Size of the badge */
+  height: 1.5rem; /* Size of the badge */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem; /* Adjust text size of count */
+  font-weight: bold;
+}
+
+
+.cart-icon-link:hover {
+  color: #ffc107;
+}
+
+/* Hamburger */
 .hamburger {
   display: none;
   font-size: 2rem;
@@ -91,11 +132,20 @@
     align-items: center;
     width: 100%;
     padding: 1rem;
+    margin-right: 0;
   }
 
   .navbar-links a, .navbar-links .logout-btn {
     margin: 0.8rem 0;
     font-size: 1.1rem;
     text-align: center;
+  }
+
+  /* Cart icon outside menu */
+  .cart-icon-link {
+    position: absolute;
+    top: 15px;
+    right: 50px;
+    font-size: 1.3rem;
   }
 }

@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import "../css/Login.css";
 
 function Login() {
@@ -70,7 +70,7 @@ function Login() {
   return (
     <div className="login-page">
       <ToastContainer position="top-right" />
-      
+
       <div className="branding-main">
         <h1 className="brand-title">📚 Book Lovers</h1>
         <p className="brand-subtitle">Your favorite stories await.</p>
@@ -101,6 +101,9 @@ function Login() {
           <button type="submit" disabled={isLoading} className="login-button">
             {isLoading ? "Logging in..." : "Login"}
           </button>
+          <p className="link-text">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
 
           <p className="link-text">
             Don't have an account? <Link to="/signup">Signup</Link>

@@ -17,6 +17,7 @@ import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const AppRoutes = () => {
   const { auth, loading } = useContext(AuthContext); // Include loading
@@ -34,6 +35,7 @@ const AppRoutes = () => {
           path="/login"
           element={isLoggedIn ? <Navigate to="/" /> : <Login />}
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/signup"
           element={isLoggedIn ? <Navigate to="/" /> : <Signup />}
