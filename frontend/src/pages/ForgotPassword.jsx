@@ -11,11 +11,13 @@ function ForgotPassword() {
   const [userFound, setUserFound] = useState(false);
   const [enteredName, setEnteredName] = useState(""); // For entered name
   const [nameMatch, setNameMatch] = useState(false); // To check if entered name matches
+  const [loading, setLoading] = useState(false); // To track loading state for buttons
 
   const navigate = useNavigate();
 
   const handlePhoneSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when request starts
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/check-user`, {
         method: "POST",
@@ -33,6 +35,8 @@ function ForgotPassword() {
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong");
+    } finally {
+      setLoading(false); // Set loading to false after request completes
     }
   };
 
@@ -48,6 +52,7 @@ function ForgotPassword() {
 
   const handleResetSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when request starts
     try {
       const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/reset-password`, {
         method: "POST",
@@ -64,6 +69,8 @@ function ForgotPassword() {
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong");
+    } finally {
+      setLoading(false); // Set loading to false after request completes
     }
   };
 
@@ -81,7 +88,9 @@ function ForgotPassword() {
             onChange={(e) => setPhone(e.target.value)}
             required
           />
-          <button className="forgot-button" type="submit">Find User</button>
+          <button className="forgot-button" type="submit">
+            {loading ? "Finding..." : "Find User"}
+          </button>
         </form>
       ) : !nameMatch ? (
         <form className="forgot-form" onSubmit={handleNameSubmit}>
@@ -94,7 +103,9 @@ function ForgotPassword() {
             onChange={(e) => setEnteredName(e.target.value)}
             required
           />
-          <button className="forgot-button" type="submit">Verify Name</button>
+          <button className="forgot-button" type="submit">
+            {loading ? "Verifying..." : "Verify Name"}
+          </button>
         </form>
       ) : (
         <form className="forgot-form" onSubmit={handleResetSubmit}>
@@ -107,7 +118,9 @@ function ForgotPassword() {
             onChange={(e) => setNewPassword(e.target.value)}
             required
           />
-          <button className="forgot-button" type="submit">Reset Password</button>
+          <button className="forgot-button" type="submit">
+            {loading ? "Resetting..." : "Reset Password"}
+          </button>
         </form>
       )}
     </div>

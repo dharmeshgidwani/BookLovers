@@ -15,6 +15,7 @@ function Home() {
   const [originalBooks, setOriginalBooks] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [sortOrder, setSortOrder] = useState("low-to-high");
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const activeOrderId = location?.state?.activeOrderId;
 
@@ -35,6 +36,8 @@ function Home() {
       } catch (err) {
         console.error("Error fetching books:", err);
         toast.error("❌ Something went wrong while fetching books.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchBooks();
@@ -120,8 +123,6 @@ function Home() {
 
   const genres = [...new Set(books.map((book) => book.genre))];
 
-
-
   return (
     <div className="home-page">
       {/* Toast Notifications */}
@@ -163,9 +164,23 @@ function Home() {
               className="instagram-icon"
             />
           </a>
-          <a href="https://wa.me/7022632653" target="_blank" rel="noopener noreferrer" className="contact-button whatsapp">Chat on WhatsApp</a>
+          <a
+            href="https://wa.me/7022632653"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-button whatsapp"
+          >
+            Chat on WhatsApp
+          </a>
         </div>
       </div>
+
+      {/* Spinner Loader */}
+      {loading && (
+        <div className="loader-container">
+          <div className="spinner"></div>
+        </div>
+      )}
 
       {/* <div className="company-info">
         <div className="info-card">
@@ -243,7 +258,9 @@ function Home() {
                     <h3>{book.title}</h3>
                     {/* {book.author ? (<p>Author: {book.author}</p>) : null} */}
                     {/* <p>MRP: ₹{book.mrp}</p> */}
-                    <p>Price: <strong>₹{book.price}</strong></p>
+                    <p>
+                      Price: <strong>₹{book.price}</strong>
+                    </p>
                     {/* <p>Type: {book.bookType}</p> */}
                     <Link to={`/book/${book._id}`} className="btn">
                       View Details
