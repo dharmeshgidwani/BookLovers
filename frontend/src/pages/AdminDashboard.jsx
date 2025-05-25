@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/AdminDashboard.css";
+import * as XLSX from "xlsx";
 
 const AdminDashboard = () => {
   const [books, setBooks] = useState([]);
@@ -21,6 +22,13 @@ const AdminDashboard = () => {
   const [showForm, setShowForm] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [amountPaid, setAmountPaid] = useState({});
+  const [editingOrderId, setEditingOrderId] = useState(null);
+  const [editedBooks, setEditedBooks] = useState([]);
+  const [allBooks, setAllBooks] = useState([]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
 
   useEffect(() => {
     fetchBooks();
@@ -31,6 +39,31 @@ const AdminDashboard = () => {
     const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/books`);
     const data = await res.json();
     setBooks(data);
+    setAllBooks(data);
+  };
+  
+  console.log("Book",books)
+
+  const exportToExcel = () => {
+    if (!books || books.length === 0) {
+      alert('No books available to export.');
+      return;
+    }
+
+    const formattedBooks = books.map(book => ({
+      ID: book._id,
+      Title: book.title,
+      Author: book.author,
+      Genre: book.genre,
+      Price: book.price,
+      Stock: book.stock,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedBooks);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Books');
+
+    XLSX.writeFile(workbook, 'Books_Export.xlsx');
   };
 
   const fetchOrders = async () => {
@@ -68,7 +101,7 @@ const AdminDashboard = () => {
   const handleAddOrUpdateBook = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-  
+
     if (newBook.title) formData.append("title", newBook.title);
     if (newBook.bookType) formData.append("bookType", newBook.bookType);
     if (newBook.author) formData.append("author", newBook.author);
@@ -78,21 +111,21 @@ const AdminDashboard = () => {
     if (newBook.price !== undefined) formData.append("price", newBook.price);
     if (newBook.stock !== undefined) formData.append("stock", newBook.stock);
     if (newBook.image) formData.append("image", newBook.image);
-  
+
     const url = editingBookId
       ? `${import.meta.env.VITE_APP_API_URL}/api/books/${editingBookId}`
       : `${import.meta.env.VITE_APP_API_URL}/api/books/add`;
-  
+
     const method = editingBookId ? "PUT" : "POST";
-  
+
     try {
       const res = await fetch(url, {
         method,
         body: formData,
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok) {
         alert(`Book ${editingBookId ? "updated" : "added"} successfully!`);
         fetchBooks();
@@ -105,7 +138,6 @@ const AdminDashboard = () => {
       alert("Something went wrong. Please try again.");
     }
   };
-  
 
   const handleDelete = async (bookId) => {
     const res = await fetch(
@@ -204,31 +236,33 @@ const AdminDashboard = () => {
 
   const handleAmountPaidUpdate = async (orderId, amountPaid) => {
     // Find the order object based on orderId (if needed)
-    const order = filteredPendingOrders.find(order => order._id === orderId);
+    const order = filteredPendingOrders.find((order) => order._id === orderId);
     if (!order) {
       console.error("Order not found!");
       return;
     }
-  
+
     const amountPending = order.totalPrice - amountPaid;
-  
+
     const res = await fetch(
-      `${import.meta.env.VITE_APP_API_URL}/api/orders/${orderId}/updateAmountPaid`,
+      `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/orders/${orderId}/updateAmountPaid`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amountPaid, amountPending }),
       }
     );
-  
+
     if (res.ok) {
       alert("Amount Paid updated successfully!");
-      fetchOrders(); 
+      fetchOrders();
     } else {
       alert("Error updating amount details.");
     }
   };
-  
+
   const handleAmountPaidChange = (orderId, value) => {
     setAmountPaid((prevState) => ({
       ...prevState,
@@ -236,6 +270,88 @@ const AdminDashboard = () => {
     }));
   };
 
+  const startEditingOrder = (order) => {
+    setEditingOrderId(order._id);
+    setEditedBooks(
+      order.books.map((b) => ({
+        bookId: b.bookId._id || b.bookId,
+        quantity: b.quantity,
+      }))
+    );
+  };
+
+  const handleEditQuantityChange = (bookId, newQty) => {
+    setEditedBooks((prev) =>
+      prev.map((b) =>
+        b.bookId === bookId ? { ...b, quantity: parseInt(newQty) } : b
+      )
+    );
+  };
+
+  const handleRemoveBook = (bookId) => {
+    setEditedBooks((prev) => prev.filter((b) => b.bookId !== bookId));
+  };
+
+  const handleAddBook = (bookId) => {
+    if (!bookId) return;
+    setEditedBooks((prev) => [...prev, { bookId, quantity: 1 }]);
+  };
+
+  const saveEditedOrder = async (order) => {
+    // Create originalBooks array from existing order
+    const originalBooks = order.books.map((b) => ({
+      bookId: b.bookId._id || b.bookId,
+      quantity: b.quantity,
+    }));
+  
+    // Prepare updatedBooks with price and title by matching from allBooks
+    const enrichedEditedBooks = editedBooks.map((editedBook) => {
+      const bookData = allBooks.find(
+        (book) =>
+          book._id === editedBook.bookId || book._id === editedBook.bookId?._id
+      );
+      return {
+        bookId: editedBook.bookId,
+        quantity: editedBook.quantity,
+        title: bookData?.title || "Unknown",
+        price: bookData?.price || 0,
+      };
+    });
+  
+    // Calculate new total price
+    const newTotalPrice = enrichedEditedBooks.reduce((sum, book) => {
+      return sum + book.price * book.quantity;
+    }, 0);
+  
+    try {
+      const res = await fetch(`/api/orders/${order._id}/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalBooks,
+          updatedBooks: enrichedEditedBooks,
+          totalPrice: newTotalPrice,
+        }),
+      });
+  
+      if (!res.ok) {
+        // If the response is not OK, handle the error
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+  
+      const responseData = await res.json();
+      // Handle the response data
+      alert("Order updated");
+      setEditingOrderId(null);
+      fetchOrders();
+    } catch (err) {
+      alert("Error updating order: " + err.message);
+    }
+  };
+  
+  
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
@@ -267,6 +383,9 @@ const AdminDashboard = () => {
           }}
         >
           {showOrders ? "Hide Orders" : "View Orders"}
+        </button>
+        <button onClick={exportToExcel}>
+          Export to Excel
         </button>
       </div>
 
@@ -387,7 +506,7 @@ const AdminDashboard = () => {
                   {book.title} by {book.author}
                 </h4>
                 <p>Genre: {book.genre}</p>
-                <p>Price: ${book.price}</p>
+                <p>Price: ₹{book.price}</p>
                 <p>Stock: {book.stock}</p>
                 <button onClick={() => handleDelete(book._id)}>Delete</button>
                 <button onClick={() => handleEdit(book)}>Edit</button>
@@ -494,6 +613,73 @@ const AdminDashboard = () => {
                       <option value="Cancelled">Cancelled</option>
                       <option value="Delivered">Delivered</option>
                     </select>
+                    {editingOrderId === order._id ? (
+                      <>
+                        <div className="edit-order-section">
+                          <h4>Edit Books</h4>
+                          {editedBooks.map((book, index) => {
+                            const bookDetails = allBooks.find(
+                              (b) => b._id === book.bookId
+                            );
+                            return (
+                              <div key={index} className="book-edit-row">
+                                <span>
+                                  {bookDetails?.title || "Unknown Book"}
+                                </span>
+                                <input
+                                  type="number"
+                                  value={book.quantity}
+                                  min={1}
+                                  onChange={(e) =>
+                                    handleEditQuantityChange(
+                                      book.bookId,
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                                <button
+                                  onClick={() => handleRemoveBook(book.bookId)}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            );
+                          })}
+
+                          <select
+                            onChange={(e) => handleAddBook(e.target.value)}
+                            value=""
+                          >
+                            <option value="" disabled>
+                              Add book...
+                            </option>
+                            {allBooks
+                              .filter(
+                                (b) =>
+                                  !editedBooks.find((eb) => eb.bookId === b._id)
+                              )
+                              .map((book) => (
+                                <option key={book._id} value={book._id}>
+                                  {book.title} (Stock: {book.stock})
+                                </option>
+                              ))}
+                          </select>
+
+                          <div className="edit-buttons">
+                            <button onClick={() => saveEditedOrder(order)}>
+                              Save Changes
+                            </button>
+                            <button onClick={() => setEditingOrderId(null)}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <button onClick={() => startEditingOrder(order)}>
+                        Edit Order
+                      </button>
+                    )}
                   </div>
                 </li>
               ))
