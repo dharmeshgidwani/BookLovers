@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../css/AdminDashboard.css";
-import * as XLSX from "xlsx";
 
 const AdminDashboard = () => {
   const [books, setBooks] = useState([]);
@@ -44,27 +43,32 @@ const AdminDashboard = () => {
   
   console.log("Book",books)
 
-  const exportToExcel = () => {
-    if (!books || books.length === 0) {
-      alert('No books available to export.');
-      return;
-    }
+  const exportToExcel = async () => {
+  if (!books || books.length === 0) {
+    alert('No books available to export.');
+    return;
+  }
 
-    const formattedBooks = books.map(book => ({
-      ID: book._id,
-      Title: book.title,
-      Author: book.author,
-      Genre: book.genre,
-      Price: book.price,
-      Stock: book.stock,
-    }));
+  const XLSX = await import("xlsx");
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedBooks);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Books');
+  const formattedBooks = books.map(book => ({
+    ID: book._id,
+    Title: book.title,
+    Author: book.author,
+    Genre: book.genre,
+    Price: book.price,
+    Stock: book.stock,
+    ISBN: book.isbn || 'N/A',
+    Published: book.publishedDate || 'N/A',
+  }));
 
-    XLSX.writeFile(workbook, 'Books_Export.xlsx');
-  };
+  const worksheet = XLSX.utils.json_to_sheet(formattedBooks);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Books');
+
+  XLSX.writeFile(workbook, 'Books_Export.xlsx');
+};
+
 
   const fetchOrders = async () => {
     try {
