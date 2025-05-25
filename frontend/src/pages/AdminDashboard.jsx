@@ -50,7 +50,7 @@ const AdminDashboard = () => {
   }
 
   // ✅ Dynamically import xlsx only when needed
-  const XLSX = await import('xlsx');
+  const XLSX = await import('xlsx-js-style');
 
   const formattedBooks = books.map(book => ({
     ID: book._id,
