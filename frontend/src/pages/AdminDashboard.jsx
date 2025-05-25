@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/AdminDashboard.css";
+import * as XLSX from 'xlsx/dist/xlsx.full.min.js';
 
 const AdminDashboard = () => {
   const [books, setBooks] = useState([]);
