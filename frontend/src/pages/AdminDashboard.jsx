@@ -59,8 +59,6 @@ const AdminDashboard = () => {
     Genre: book.genre,
     Price: book.price,
     Stock: book.stock,
-    ISBN: book.isbn || 'N/A',
-    Published: book.publishedDate || 'N/A',
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(formattedBooks);
