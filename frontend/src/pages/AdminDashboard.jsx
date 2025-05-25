@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../css/AdminDashboard.css";
-import * as XLSX from 'xlsx/dist/xlsx.full.min.js';
 
 const AdminDashboard = () => {
   const [books, setBooks] = useState([]);
@@ -50,7 +49,8 @@ const AdminDashboard = () => {
     return;
   }
 
-  const XLSX = await import("xlsx");
+  // ✅ Dynamically import xlsx only when needed
+  const XLSX = await import('xlsx');
 
   const formattedBooks = books.map(book => ({
     ID: book._id,
@@ -69,6 +69,7 @@ const AdminDashboard = () => {
 
   XLSX.writeFile(workbook, 'Books_Export.xlsx');
 };
+
 
 
   const fetchOrders = async () => {
