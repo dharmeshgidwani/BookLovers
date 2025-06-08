@@ -11,7 +11,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 const allowedOrigins = [
-  "http://localhost:5174",
+  "http://localhost:5173",
   "https://book-lovers.vercel.app",
   "https://www.booklovers.co.in",
   "https://booklovers.co.in"

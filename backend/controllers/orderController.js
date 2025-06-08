@@ -266,19 +266,19 @@ const updateOrderDetails = async (req, res) => {
     }, {});
 
     // ✅ Handle removed books (restore stock)
-    for (const bookId in originalMap) {
-      if (!updatedMap[bookId]) {
-        const book = booksMap[bookId];
+    const removedBooksPromises = originalBooks.map(async (bookItem) => {
+      if (!updatedMap[bookItem.bookId]) {
+        const book = booksMap[bookItem.bookId];
         if (book) {
           // Restore stock for removed books
-          book.stock += originalMap[bookId];
-          await book.save();  // Save updated stock in the Book schema
+          book.stock += bookItem.quantity;
+          await book.save();  // Save updated stock
         }
       }
-    }
+    });
 
     // ✅ Validate and apply changes for remaining books (increase/decrease stock)
-    for (const item of updatedBooks) {
+    const updatedBooksPromises = updatedBooks.map(async (item) => {
       const book = booksMap[item.bookId];
       if (!book) {
         return res.status(404).json({ message: `Book not found: ${item.bookId}` });
@@ -300,27 +300,38 @@ const updateOrderDetails = async (req, res) => {
         book.stock += -qtyChange; // Increase stock for removed quantity
       }
 
-      await book.save(); // Save updated stock for the book in the Book schema
-    }
+      await book.save(); // Save updated stock for the book
+    });
+
+    // ✅ Run all stock updates concurrently
+    await Promise.all([...removedBooksPromises, ...updatedBooksPromises]);
 
     // ✅ Update the order itself
     order.books = updatedBooks;
 
+    // Calculate the new total price
     let newTotal = 0;
-    for (const item of updatedBooks) {
+    const totalPromises = updatedBooks.map(async (item) => {
       const bookInfo = await Book.findById(item.bookId);
-      if (!bookInfo) continue;
-      newTotal += bookInfo.price * item.quantity;
-    }
+      if (bookInfo) {
+        newTotal += bookInfo.price * item.quantity;
+      }
+    });
 
+    // Wait for all total calculations to finish
+    await Promise.all(totalPromises);
+
+    // Update order's total price and amount pending
     order.totalPrice = newTotal;
     order.amountPending = newTotal - order.amountPaid;
 
+    // Add status change to order history
     order.statusHistory.push({
       status: "Order Updated",
       changedAt: new Date(),
     });
 
+    // Save the updated order
     const updatedOrder = await order.save();
     res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
 
