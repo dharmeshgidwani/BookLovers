@@ -95,7 +95,7 @@ function ForgotPassword() {
       ) : !nameMatch ? (
         <form className="forgot-form" onSubmit={handleNameSubmit}>
           <p>Hello, we found a user with your phone number </p> 
-          <p>Please enter your <strong>NAME</strong> to verify.</p>
+          <p>Please enter your <strong>FULL NAME</strong> to verify.</p>
           <input
             className="input-field"
             type="text"
