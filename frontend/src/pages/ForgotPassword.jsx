@@ -25,6 +25,7 @@ function ForgotPassword() {
         body: JSON.stringify({ phone }),
       });
       const data = await res.json();
+      console.log("data", data)
       if (res.ok) {
         setName(data.name);
         setUserFound(true);
